@@ -1,0 +1,21 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 360px;
+  height: 360px;
+  margin: 10px auto;
+
+  &-row {
+    display: flex;
+    flex: 1;
+  }
+
+  &-column {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex: 1;
+    border: 1px solid black;
+  }
+}

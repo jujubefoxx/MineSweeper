@@ -2,9 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Title</title>
+    <link rel="stylesheet/less" href="/H5/static/index.less">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
 </head>
 <body>
+<div id="mineSweeper" class="board">
+    <div v-for="(row,index) in board" class="board-row">
+        <div v-for="(column,key) in row" class="board-column" @click="updateBoard">
+            {{ column.data }}
+        </div>
+    </div>
+</div>
+<!--引入cdn-->
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
+<script>
+    const el = new Vue({
+        //挂载
+        el: "#mineSweeper",
+        data() {
+            const board = new Array(9).fill(new Array(9).fill({
+                data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                show: false,//是否翻开
+                isBoom: false //是否炸弹
+            }))
+            return {
+                board,
+            }
+        },
+        method: {
+            // 更新格子状态
+            updateBoard(click) {
+                const {board} = this;
+                const m = board.length;
+                const n = board[0].length;
+                const dx = [1, 1, 1, -1, -1, -1, 0, 0];
+                const dy = [1, 0, -1, 0, 1, -1, 1, -1];
+                const inBound = (x, y) => x >= 0 && x < m && y >= 0 && y < n; // 辅助函数
+
+                const update = (x, y) => {
+                    if (!inBound(x, y) || board[x][y] !== 'E') return; // 不在界内或不是E，直接返回
+                    let count = 0;
+                    for (let i = 0; i < 8; i++) { // 统计周围雷的个数
+                        const nX = x + dx[i];
+                        const nY = y + dy[i];
+                        if (inBound(nX, nY) && board[nX][nY] === 'M') {
+                            count++;
+                        }
+                    }
+                    if (count === 0) { // 如果周围没有雷，标记B，递归周围的点
+                        board[x][y] = 'B';
+                        for (let i = 0; i < 8; i++) {
+                            update(x + dx[i], y + dy[i]);
+                        }
+                    } else {
+                        board[x][y] = count + '';
+                    }
+                };
+
+                const [cX, cY] = click;
+                if (board[cX][cY] === 'M') { // 第一下就踩雷了
+                    board[cX][cY] = 'X';
+                } else {
+                    update(cX, cY); // 开启dfs
+                }
+            }
+        }
+    });
+</script>
 </body>
 </html>
