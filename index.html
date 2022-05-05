@@ -12,7 +12,11 @@
     <div v-for="(row,index) in board" class="board-row">
         <div v-for="(column,key) in row" class="board-column"
              @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
-            {{ column.data }}
+            <div v-if="parseInt(column.data) === -1" class="board-column__unknown"></div>
+            <div v-else-if="parseInt(column.data) === 0" class="board-column__save"></div>
+            <div v-else-if="column.data === 'X'" class="board-column__boom"></div>
+            <div v-else class="board-column__num">{{ column.data }}</div>
+            <!--            {{ column.data }}-->
         </div>
     </div>
 </div>
