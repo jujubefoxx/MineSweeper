@@ -85,8 +85,8 @@
                     if (over) return;// 如果游戏已经结束 直接返回
                     const m = board.length;
                     const n = board[0].length;
-                    const dx = [1, 1, 1, -1, -1, -1, 0, 0]; // 横坐标
-                    const dy = [1, 0, -1, 0, 1, -1, 1, -1]; // 纵坐标
+                    const dx = [1, -1, 0, 0, -1, 1, -1, 1]; // 横坐标
+                    const dy = [0, 0, 1, -1, 1, -1, -1, 1]; // 纵坐标
                     const inBound = (x, y) => x >= 0 && x < m && y >= 0 && y < n; // 辅助函数
 
                     const update = (x, y) => {
@@ -99,15 +99,15 @@
                                 count++;
                             }
                         }
-                        if (count === 0) { // 如果周围没有雷，翻开且标记0，递归周围的点
+                        if (count === 0) { // 如果周围没有雷，翻开且标记0，递归上下左右的点
                             const obj = {
                                 data: '0',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
                                 show: true,//是否翻开
                                 isBoom: false //是否炸弹
                             }
                             this.editBoard(x, y, obj)
-                            for (let i = 0; i < 8; i++) {
-                                update(x + dx[i], y + dy[i]);
+                            for (let i = 0; i < 4; i++) {
+                                update(x + dx[i], y + dy[i]);// 只递归前四个点
                             }
                         } else {
                             const obj = {
