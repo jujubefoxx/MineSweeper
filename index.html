@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Title</title>
-    <link rel="stylesheet/less" href="/H5/static/index.less">
+    <link rel="stylesheet/less" href="/static/index.less">
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
 </head>
 <body>
@@ -15,7 +15,7 @@
                  @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
                 <div v-if="parseInt(column.data) === -1" class="board-column__unknown"></div>
                 <div v-else-if="column.data === 'X'" class="board-column__show board-column__show">
-                    <img class="board-column__boom" src="statics/images/icon_boom1.svg">
+                    <img class="board-column__boom" src="static/images/icon_boom1.svg">
                 </div>
                 <div v-else class="board-column__show">{{ parseInt(column.data) > 0 ? column.data : '' }}</div>
             </div>
@@ -31,7 +31,7 @@
 </div>
 <!--&lt;!&ndash;引入cdn&ndash;&gt;-->
 <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
-<script src="H5/utils/vue.js"></script>
+<script src="utils/vue.js"></script>
 
 <script>
     const el = new Vue({
@@ -53,9 +53,9 @@
                 // 重新开始
                 restart() {
                     this.board = new Array(9).fill(new Array(9).fill({
-                        data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
-                        show: false,//是否翻开
-                        isBoom: false //是否炸弹
+                        data: '-1',
+                        show: false,
+                        isBoom: false
                     }));
                     this.isInit = false;
                     this.over = false;
@@ -88,9 +88,9 @@
                     for (let i = 0; i < dx.length; i++) {
                         // console.log(JSON.stringify([dx[i]][dy[i]]))
                         const obj = {
-                            data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
-                            show: false,//是否翻开
-                            isBoom: true //是否炸弹
+                            data: '-1',
+                            show: false,
+                            isBoom: true //是炸弹
                         }
                         this.editBoard(dx[i], dy[i], obj);
                     }
@@ -119,9 +119,9 @@
                         }
                         if (count === 0) { // 如果周围没有雷，翻开且标记0，递归上下左右的点
                             const obj = {
-                                data: '0',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
-                                show: true,//是否翻开
-                                isBoom: false //是否炸弹
+                                data: '0',// 0翻开的空格子
+                                show: true,// 已翻开
+                                isBoom: false // 不是炸弹
                             }
                             this.editBoard(x, y, obj)
                             for (let i = 0; i < 4; i++) {
@@ -129,9 +129,9 @@
                             }
                         } else {
                             const obj = {
-                                data: count + '',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
-                                show: true,//是否翻开
-                                isBoom: false //是否炸弹
+                                data: count + '',// 数字1-9附近有炸弹
+                                show: true,// 已翻开
+                                isBoom: false // 不是炸弹
                             }
                             this.editBoard(x, y, obj)
                         }
@@ -140,9 +140,9 @@
                     const [cX, cY] = click;
                     if (board[cX][cY].isBoom) { // 第一下就踩雷了
                         const obj = {
-                            data: 'X',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
-                            show: true,//是否翻开
-                            isBoom: true //是否炸弹
+                            data: 'X',// X炸弹
+                            show: true,// 已翻开
+                            isBoom: true // 是炸弹
                         };
                         this.editBoard(cX, cY, obj);
                         this.over = true;
