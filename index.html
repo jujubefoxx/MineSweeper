@@ -8,16 +8,25 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
 </head>
 <body>
-<div id="mineSweeper" class="board">
-    <div v-for="(row,index) in board" class="board-row">
-        <div v-for="(column,key) in row" class="board-column"
-             @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
-            <div v-if="parseInt(column.data) === -1" class="board-column__unknown"></div>
-            <div v-else-if="parseInt(column.data) === 0" class="board-column__save"></div>
-            <div v-else-if="column.data === 'X'" class="board-column__boom"></div>
-            <div v-else class="board-column__num">{{ column.data }}</div>
-            <!--            {{ column.data }}-->
+<div id="mineSweeper">
+    <div class="board">
+        <div v-for="(row,index) in board" class="board-row">
+            <div v-for="(column,key) in row" class="board-column"
+                 @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
+                <div v-if="parseInt(column.data) === -1" class="board-column__unknown"></div>
+                <div v-else-if="column.data === 'X'" class="board-column__show board-column__show">
+                    <img class="board-column__boom" src="statics/images/icon_boom1.svg">
+                </div>
+                <div v-else class="board-column__show">{{ parseInt(column.data) > 0 ? column.data : '' }}</div>
+            </div>
         </div>
+    </div>
+
+    <div class="bottom">
+        <div class="bottom-button">
+            <div class="bottom-button__list bottom-button__list--restart" @click="restart">重新开始</div>
+        </div>
+        <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
     </div>
 </div>
 <!--&lt;!&ndash;引入cdn&ndash;&gt;-->
@@ -34,7 +43,6 @@
                     show: false,//是否翻开
                     isBoom: false //是否炸弹
                 }))
-                console.log(board)
                 return {
                     isInit: false, // 保证第一个点击的格子不是雷
                     board,
@@ -42,6 +50,16 @@
                 }
             },
             methods: {
+                // 重新开始
+                restart() {
+                    this.board = new Array(9).fill(new Array(9).fill({
+                        data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                        show: false,//是否翻开
+                        isBoom: false //是否炸弹
+                    }));
+                    this.isInit = false;
+                    this.over = false;
+                },
                 // 修改数组
                 editBoard(x, y, data) {
                     const {board} = this;
