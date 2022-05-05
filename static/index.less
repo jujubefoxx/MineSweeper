@@ -1,50 +1,80 @@
+//棋盘
 .board {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 360px;
-  height: 360px;
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: space-around;
+  max-width: 370px;
+  //min-height: 360px;
   margin: 10px auto;
-  background: gainsboro;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
 
   &-row {
     display: flex;
-    flex: 1;
+    //flex: 1;
+    overflow: hidden;
   }
 
   &-column {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex: 1;
-    border: 1px solid black;
-    margin-right: -1px;
-    margin-bottom: -1px;
+    //flex: 1;
+    margin: 1px;
+    background: gainsboro;
+    overflow: hidden;
 
-    &__unknown {
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
+    //max-width: 38px;
+    //max-height: 38px;
+    //border: 1px solid black;
+    //margin-right: -1px;
+    //margin-bottom: -1px;
+
+    &--small {
+      width: 38px;
+      height: 38px;
     }
 
-    &__img {
-      width: 90%;
-      height: 90%;
+    &--middle {
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
     }
 
-    &__show {
+    &--large {
+      width: 20px;
+      height: 20px;
+      font-size: 12px;
+    }
+
+    &__list {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
       height: 100%;
-      background: whitesmoke;
-      box-shadow: gainsboro -2px -2px inset;
+      overflow: hidden;
+
+      &--unknown {
+        cursor: pointer;
+      }
+
+      &--show {
+        background: whitesmoke;
+        box-shadow: gainsboro 2px 2px inset;
+      }
+    }
+
+    &__img {
+      width: 100%;
+      height: 90%;
+
+      &--disable {
+        cursor: auto;
+      }
     }
   }
 }
 
+//底部
 .bottom {
   margin-top: 20px;
 
@@ -104,3 +134,38 @@
   }
 }
 
+//等级
+.level {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+  max-width: 360px;
+  margin: 10px auto;
+  padding: 16px;
+  border: 2px dashed #409eff;
+
+  &-list {
+    display: inline-block;
+    width: 200px;
+    height: 30px;
+    line-height: 30px;
+    margin: 10px;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: none;
+    transition: .1s;
+    font-weight: 500;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    font-size: 14px;
+    border-radius: 20px;
+    color: #fff;
+    background-color: #409eff;
+    border-color: #409eff;
+  }
+}
