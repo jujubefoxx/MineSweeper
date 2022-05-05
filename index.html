@@ -11,13 +11,14 @@
 <div id="mineSweeper" class="board">
     <div v-for="(row,index) in board" class="board-row">
         <div v-for="(column,key) in row" class="board-column"
-             @click="isInit?updateBoard([index,key]):setBoom([index,key])">
-            {{ column.isBoom }}
+             @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
+            {{ column.data }}
         </div>
     </div>
 </div>
-<!--引入cdn-->
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<!--&lt;!&ndash;引入cdn&ndash;&gt;-->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<script src="H5/utils/vue.js"></script>
 
 <script>
     const el = new Vue({
@@ -29,20 +30,30 @@
                     show: false,//是否翻开
                     isBoom: false //是否炸弹
                 }))
+                console.log(board)
                 return {
-                    isInit: false,
+                    isInit: false, // 保证第一个点击的格子不是雷
                     board,
+                    over: false, // 游戏是否结束
                 }
             },
             methods: {
+                // 修改数组
+                editBoard(x, y, data) {
+                    const {board} = this;
+                    const row = [...board[x]];// 获取那一行的数据
+                    row.splice(y, 1, data) // 修改
+                    this.$set(board, x, row)
+                },
                 // 初始化棋盘
                 setBoom(click) {
+                    const {board} = this;
                     const [cX, cY] = click;
                     const dx = [], dy = [];
                     //先生成十个炸弹
                     while (dx.length < 10) {
-                        const randomX = Math.round(Math.random() * (this.board.length - 1));//获取一个范围内的随机数
-                        const randomY = Math.round(Math.random() * (this.board.length - 1));//获取一个范围内的随机数
+                        const randomX = Math.round(Math.random() * (board.length - 1));//获取一个范围内的随机数
+                        const randomY = Math.round(Math.random() * (board.length - 1));//获取一个范围内的随机数
                         const isClick = JSON.stringify([cX, cY]) === JSON.stringify([randomX, randomY])
                         if (!isClick && (dx.indexOf(randomX) === -1 || dx.indexOf(randomX) !== dy.indexOf(randomY))) {
                             // 如果没有重复则推入
@@ -52,46 +63,67 @@
                     }
 
                     // 修改炸弹数据
-                    for (let i = 0; i < dx.length; i++) { // 统计周围雷的个数
-                        console.log(dx[i], dy[i])
+                    for (let i = 0; i < dx.length; i++) {
                         // console.log(JSON.stringify([dx[i]][dy[i]]))
-                        this.board[dx[i]][dy[i]].isBoom = true;
+                        const obj = {
+                            data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                            show: false,//是否翻开
+                            isBoom: true //是否炸弹
+                        }
+                        this.editBoard(dx[i], dy[i], obj);
                     }
                     this.isInit = true;
-
+                    this.updateBoard(click);
                 },
                 // 更新格子状态
                 updateBoard(click) {
-                    const {board} = this;
+                    const {board, over} = this;
+                    if (over) return;// 如果游戏已经结束 直接返回
                     const m = board.length;
                     const n = board[0].length;
-                    const dx = [1, 1, 1, -1, -1, -1, 0, 0];
-                    const dy = [1, 0, -1, 0, 1, -1, 1, -1];
+                    const dx = [1, 1, 1, -1, -1, -1, 0, 0]; // 横坐标
+                    const dy = [1, 0, -1, 0, 1, -1, 1, -1]; // 纵坐标
                     const inBound = (x, y) => x >= 0 && x < m && y >= 0 && y < n; // 辅助函数
 
                     const update = (x, y) => {
-                        if (!inBound(x, y) || board[x][y] !== 'E') return; // 不在界内或不是E，直接返回
+                        if (!inBound(x, y) || board[x][y].show) return; // 不在界内或已翻开，直接返回
                         let count = 0;
                         for (let i = 0; i < 8; i++) { // 统计周围雷的个数
                             const nX = x + dx[i];
                             const nY = y + dy[i];
-                            if (inBound(nX, nY) && board[nX][nY] === 'M') {
+                            if (inBound(nX, nY) && board[nX][nY].isBoom) {
                                 count++;
                             }
                         }
-                        if (count === 0) { // 如果周围没有雷，标记B，递归周围的点
-                            board[x][y] = 'B';
+                        if (count === 0) { // 如果周围没有雷，翻开且标记0，递归周围的点
+                            const obj = {
+                                data: '0',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                                show: true,//是否翻开
+                                isBoom: false //是否炸弹
+                            }
+                            this.editBoard(x, y, obj)
                             for (let i = 0; i < 8; i++) {
                                 update(x + dx[i], y + dy[i]);
                             }
                         } else {
-                            board[x][y] = count + '';
+                            const obj = {
+                                data: count + '',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                                show: true,//是否翻开
+                                isBoom: false //是否炸弹
+                            }
+                            this.editBoard(x, y, obj)
                         }
                     };
 
                     const [cX, cY] = click;
-                    if (board[cX][cY] === 'M') { // 第一下就踩雷了
-                        board[cX][cY] = 'X';
+                    if (board[cX][cY].isBoom) { // 第一下就踩雷了
+                        const obj = {
+                            data: 'X',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                            show: true,//是否翻开
+                            isBoom: true //是否炸弹
+                        };
+                        this.editBoard(cX, cY, obj);
+                        this.over = true;
                     } else {
                         update(cX, cY); // 开启dfs
                     }
