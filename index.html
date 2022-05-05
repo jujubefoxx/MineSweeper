@@ -12,11 +12,12 @@
     <div class="board">
         <div v-for="(row,index) in board" class="board-row">
             <div v-for="(column,key) in row" class="board-column"
-                 @click="isInit ? updateBoard([index,key]) : setBoom([index,key])">
+                 @click="isSetFlag ? setFlag([index,key], column.data) : isInit ? updateBoard([index,key]) : setBoom([index,key])">
                 <div v-if="parseInt(column.data) === -1" class="board-column__unknown"></div>
-                <div v-else-if="column.data === 'X'" class="board-column__show board-column__show">
-                    <img class="board-column__boom" src="static/images/icon_boom1.svg">
+                <div v-else-if="column.data === 'X'" class="board-column__show">
+                    <img class="board-column__img" src="static/images/icon_boom1.svg">
                 </div>
+                <img v-else-if="column.data === 'F'" class="board-column__img" src="static/images/flag.svg">
                 <div v-else class="board-column__show">{{ parseInt(column.data) > 0 ? column.data : '' }}</div>
             </div>
         </div>
@@ -24,7 +25,12 @@
 
     <div class="bottom">
         <div class="bottom-button">
-            <div class="bottom-button__list bottom-button__list--restart" @click="restart">重新开始</div>
+            <div class="bottom-button__list bottom-button__restart" @click="restart">重新开始</div>
+            <div :class="['bottom-button__list bottom-button__flag',isSetFlag ? 'bottom-button__flag--active':'']"
+                 @click="isSetFlag = !isSetFlag">
+                插旗
+            </div>
+
         </div>
         <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
     </div>
@@ -39,7 +45,7 @@
             el: "#mineSweeper",
             data() {
                 const board = new Array(9).fill(new Array(9).fill({
-                    data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹
+                    data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹 F旗帜(旗帜代表未翻开，但不能点击)
                     show: false,//是否翻开
                     isBoom: false //是否炸弹
                 }))
@@ -47,9 +53,24 @@
                     isInit: false, // 保证第一个点击的格子不是雷
                     board,
                     over: false, // 游戏是否结束
+                    isSetFlag: false,// 是否插旗状态
                 }
             },
             methods: {
+                //插旗
+                setFlag(click, data) {
+                    const {board} = this;
+                    const [cX, cY] = click;
+                    const obj = {
+                        data: 'F',// F旗帜
+                        show: false,// 未翻开
+                        isBoom: false // 不是炸弹
+                    };
+                    if (data === 'F') {
+                        obj.data = '-1'; // 未翻开
+                    }
+                    this.editBoard(cX, cY, obj);
+                },
                 // 重新开始
                 restart() {
                     this.board = new Array(9).fill(new Array(9).fill({
@@ -108,7 +129,7 @@
                     const inBound = (x, y) => x >= 0 && x < m && y >= 0 && y < n; // 辅助函数
 
                     const update = (x, y) => {
-                        if (!inBound(x, y) || board[x][y].show) return; // 不在界内或已翻开，直接返回
+                        if (!inBound(x, y) || board[x][y].show || board[x][y].data === 'F') return; // 不在界内或已翻开，直接返回
                         let count = 0;
                         for (let i = 0; i < 8; i++) { // 统计周围雷的个数
                             const nX = x + dx[i];

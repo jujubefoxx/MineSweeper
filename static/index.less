@@ -28,7 +28,7 @@
       cursor: pointer;
     }
 
-    &__boom {
+    &__img {
       width: 90%;
       height: 90%;
     }
@@ -73,7 +73,7 @@
       text-align: center;
       box-sizing: border-box;
       outline: none;
-      margin: 0;
+      margin: 10px;
       transition: .1s;
       font-weight: 500;
       -moz-user-select: none;
@@ -82,14 +82,25 @@
       padding: 12px 20px;
       font-size: 14px;
       border-radius: 4px;
+    }
 
-      &--restart {
+
+    &__restart {
+      color: #fff;
+      background: #909399;
+    }
+
+    &__flag {
+      color: #fff;
+      background-color: #409eff;
+      border-color: #409eff;
+
+      &--active {
         color: #409eff;
         background: #ecf5ff;
         border-color: #b3d8ff;
       }
     }
-
   }
 }
 
