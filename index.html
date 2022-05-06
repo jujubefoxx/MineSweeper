@@ -46,7 +46,7 @@
             <div v-for="(row,index) in board" class="board-row">
                 <div v-for="(column,key) in row"
                      :class="['board-column',yNum <= 9?'board-column--small':yNum < 30?'board-column--middle':'board-column--large']"
-                     @click="isSetFlag ? setFlag([index,key], column.data , column.isBoom) : isInit ? updateBoard([index,key]) : setBoom([index,key])">
+                     @click="isSetFlag ? setFlag([index,key], column.data , column.isBoom) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
                     <div :class="['board-column__list',column.isShow ? 'board-column__list--show':'board-column__list--unknown']">
                         <img v-if="column.data === 'X'" class="board-column__img" src="static/images/icon_boom1.svg"
                              alt="炸弹">
@@ -278,15 +278,15 @@
                     this.updateBoard(click);
                 },
                 // 更新格子状态
-                updateBoard(click) {
+                updateBoard(click, data) {
                     const {board, over, yNum, xNum} = this;
-                    if (over) return;// 如果游戏已经结束 直接返回
+                    if (over || data === 'F') return;// 如果游戏已经结束或为旗帜 直接返回
                     const dx = [1, -1, 0, 0, -1, 1, -1, 1]; // 横坐标
                     const dy = [0, 0, 1, -1, 1, -1, -1, 1]; // 纵坐标
                     const inBound = (x, y) => x >= 0 && x < xNum && y >= 0 && y < yNum; // 辅助函数
 
                     const update = (x, y) => {
-                        if (!inBound(x, y) || board[y][x].isShow || board[y][x].data === 'F') return; // 不在界内或已翻开，直接返回
+                        if (!inBound(x, y) || board[y][x].isShow) return; // 不在界内或已翻开，直接返回
                         let count = 0;
                         for (let i = 0; i < 8; i++) { // 统计周围雷的个数
                             const nX = x + dx[i];
