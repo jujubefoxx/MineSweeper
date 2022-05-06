@@ -107,24 +107,24 @@
                         time: 0, // 时间
                         record: undefined,// 最高纪录
                     },
-                    resultLevel: {
+                    scoreLevel: {
                         easy: {
-                            0.49: '100%',
-                            2: '99%',
-                            10: '80%',
-                            20: '60%',
-                            50: '55%',
-                            100: '35%',
-                            200: '15%',
-                            350: '10%',
-                            500: '1%'
+                            0.49: '100',
+                            2: '99',
+                            10: '80',
+                            20: '60',
+                            50: '55',
+                            100: '35',
+                            200: '15',
+                            350: '10',
+                            500: '1'
                         },
                         middle: {
-                            7.03: '100%',
-                            15: '99%',
+                            7.03: '100',
+                            15: '99',
                         },
                         hard: {
-                            31.13: '100%'
+                            31.13: '100'
                         }
                     },
                     boomNum: 10, // 炸弹数
@@ -162,14 +162,23 @@
             },
             watch: {
                 showCount() {
+                    const {gameInfo: {time, alias}, over, showCount, saveNum, scoreLevel} = this;
 
-
-                    if (this.over) return;
-                    if (this.showCount === this.saveNum) {
+                    if (over) return; // 处理最后一个点击到炸弹的异常情况
+                    if (showCount === saveNum) {
+                        // 停止计时
                         clearInterval(this.timer)
-                        console.log('翻完了')
+                        // 击败玩家百分比
+                        let percent = '99';
+
+                        for (const key in scoreLevel[alias]) {
+                            if (time < key) {
+                                percent = scoreLevel[alias][key]
+                                break
+                            }
+                        }
                         vant.Dialog({
-                            message: `恭喜用时${this.gameInfo.time}秒挑战成功！击败了全国99%的玩家并打破了自己的最高纪录！`,
+                            message: `恭喜用时${time}秒挑战成功！击败了全国${percent}%的玩家并打破了自己的最高纪录！`,
                             confirmButtonColor: '#409eff',
                             confirmButtonText: '重新开始',
                         }).then(() => {
