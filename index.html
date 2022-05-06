@@ -233,7 +233,7 @@
                         isShow: false,
                         isBoom: false
                     }));
-                    [this.isInit, this.over, this.isSetFlag, this.gameInfo.time] = [false, false, false, 0];
+                    [this.isInit, this.over, this.isSetFlag, this.gameInfo.time, this.flagNum] = [false, false, false, 0, 0];
                     this.timer = setInterval(() => {
                         const num = parseFloat(this.gameInfo.time) + 0.01
                         this.gameInfo.time = num.toFixed(2)
