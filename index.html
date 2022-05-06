@@ -6,9 +6,36 @@
     <title>来扫雷咯</title>
     <link rel="stylesheet/less" href="static/index.less">
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
+    <!-- 引入样式文件 -->
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/vant@2.12/lib/index.css"
+    />
+
+    <script src="utils/vue.js"></script>
+    <!-- 引入Vant 的 JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/vant@2.12/lib/vant.min.js"></script>
 </head>
 <body>
 <div id="mineSweeper">
+    <div class="top">
+        <div v-if="isChoseLevel" class="top-info">
+            <div class="top-info__list">
+                难度:{{ gameInfo.level }}
+            </div>
+            <div class="top-info__list">
+                时间:{{ gameInfo.time }}s
+            </div>
+            <div class="top-info__list">
+                剩余:{{ boomNum - flagNum }}
+            </div>
+            <div v-show="isChoseLevel" class="top-info__list">
+                最高纪录:{{ gameInfo.record ?? '无' }}
+            </div>
+        </div>
+        <div v-else>请选择难度</div>
+
+    </div>
     <div v-if="!isChoseLevel" class="level">
         <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
             {{`${item.alias} （${item.xNum}×${item.yNum}）`}}
@@ -47,10 +74,8 @@
 </div>
 <!--&lt;!&ndash;引入cdn&ndash;&gt;-->
 <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
-<script src="utils/vue.js"></script>
 
 <script>
-
     const el = new Vue({
             //挂载
             el: "#mineSweeper",
@@ -74,15 +99,23 @@
                         yNum: 30,
                         boomNum: 99,
                     }],
+                    gameInfo: {
+                        level: '青铜',
+                        time: 0,
+                        record: undefined,
+                        boomNum: '',
+                    },
                     boomNum: 10, // 炸弹数
+                    flagNum: 0, // 旗帜数
                     isInit: false, // 保证第一个点击的格子不是雷
                     board: [],
                     over: false, // 游戏是否结束
                     isSetFlag: false,// 是否插旗状态
+                    timer: undefined,// 计时器
                 }
             },
             computed: {
-                // 计算已翻开的格子数
+                // 计算已翻开的格子数 当翻开的格子数=安全的格子数时游戏胜利
                 showCount() {
                     const {board} = this;
                     const arr = board.flat();
@@ -105,9 +138,20 @@
                     return yNum * xNum - boomNum
                 },
             },
+            watch: {
+                showCount() {
+                    if (this.over) return;
+                    if (this.showCount === this.saveNum) {
+                        console.log('翻完了')
+                    } else {
+                        console.log('没翻完')
+                    }
+                }
+            },
             methods: {
                 // 选择难度
                 choseLevel(item) {
+                    // vant.Dialog({ message: '提示' ,confirmButtonColor:'#409eff'});
                     const {boomNum, xNum, yNum} = item;
                     this.boomNum = boomNum;
                     this.board = new Array(yNum).fill(new Array(xNum).fill({
@@ -115,7 +159,12 @@
                         isShow: false,//是否翻开
                         isBoom: false //是否炸弹
                     }))
+                    this.gameInfo.level = item.alias;
                     this.isChoseLevel = true;
+                    this.timer = setInterval(() => {
+                        this.gameInfo.time += 1
+                        console.log('1秒')
+                    }, 1000)
                 },
                 //插旗
                 setFlag(click, data, isBoom) {
@@ -126,7 +175,10 @@
                         isBoom: isBoom // 炸弹
                     };
                     if (data === 'F') {
-                        obj.data = '-1'; // 未翻开
+                        obj.data = '-1'; // 未翻开的空格子
+                        this.flagNum -= 1
+                    } else {
+                        this.flagNum += 1
                     }
                     this.editBoard(cX, cY, obj);
                 },
@@ -137,7 +189,7 @@
                         isShow: false,
                         isBoom: false
                     }));
-                    [this.isInit, this.over, this.isSetFlag] = [false, false, false];
+                    [this.isInit, this.over, this.isSetFlag, this.gameInfo.time] = [false, false, false, 0];
                 },
                 // 修改数组
                 editBoard(x, y, data) {
@@ -223,6 +275,7 @@
                         };
                         this.editBoard(cX, cY, obj);
                         this.over = true;
+                        clearInterval(this.timer)
                     } else {
                         update(cX, cY); // 开启dfs
                     }

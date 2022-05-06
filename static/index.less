@@ -1,3 +1,21 @@
+//顶部
+.top {
+  margin: 10px auto;
+  color: #222;
+  font-weight: bold;
+  max-width: 370px;
+  text-align: center;
+  font-size: 14px;
+
+  &-info {
+    display: flex;
+
+    &__list {
+      flex: 1;
+    }
+  }
+}
+
 //棋盘
 .board {
   //display: flex;
@@ -9,8 +27,8 @@
 
   &-row {
     display: flex;
-    //flex: 1;
     overflow: hidden;
+    justify-content: center;
   }
 
   &-column {
