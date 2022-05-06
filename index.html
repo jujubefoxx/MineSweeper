@@ -293,8 +293,8 @@
                                 isBoom: false // 不是炸弹
                             }
                             this.editBoard(x, y, obj)
-                            for (let i = 0; i < 4; i++) {
-                                update(x + dx[i], y + dy[i]);// 只递归前四个点
+                            for (let i = 0; i < 8; i++) {
+                                update(x + dx[i], y + dy[i]);
                             }
                         } else {
                             const obj = {
