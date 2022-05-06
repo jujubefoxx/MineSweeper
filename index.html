@@ -125,7 +125,7 @@
                 },
                 //插旗
                 setFlag(click, data, isBoom) {
-                    const [cX, cY] = click;
+                    const [cY, cX] = click;
                     const obj = {
                         data: 'F',// F旗帜
                         isShow: false,// 未翻开
@@ -155,7 +155,7 @@
                 // 初始化棋盘
                 setBoom(click) {
                     const {xNum, yNum, boomNum} = this;
-                    const [cX, cY] = click;
+                    const [cY, cX] = click;
                     const dx = [], dy = [];
                     //生成炸弹
                     while (dx.length < boomNum) {
@@ -168,15 +168,15 @@
                             dy.push(randomY)
                         }
                     }
-
                     // 修改炸弹数据
-                    for (let i = 0; i < boomNum; i++) {
+                    for (let i = 0; i < dx.length; i++) {
                         // console.log(JSON.stringify([dx[i]][dy[i]]))
                         const obj = {
                             data: '-1',
                             isShow: false,
                             isBoom: true //是炸弹
                         }
+
                         this.editBoard(dx[i], dy[i], obj);
                     }
                     this.isInit = true;
@@ -191,12 +191,12 @@
                     const inBound = (x, y) => x >= 0 && x < xNum && y >= 0 && y < yNum; // 辅助函数
 
                     const update = (x, y) => {
-                        if (!inBound(x, y) || board[x][y].isShow || board[x][y].data === 'F') return; // 不在界内或已翻开，直接返回
+                        if (!inBound(x, y) || board[y][x].isShow || board[y][x].data === 'F') return; // 不在界内或已翻开，直接返回
                         let count = 0;
                         for (let i = 0; i < 8; i++) { // 统计周围雷的个数
                             const nX = x + dx[i];
                             const nY = y + dy[i];
-                            if (inBound(nX, nY) && board[nX][nY].isBoom) {
+                            if (inBound(nX, nY) && board[nY][nX].isBoom) {
                                 count++;
                             }
                         }
@@ -220,8 +220,8 @@
                         }
                     };
 
-                    const [cX, cY] = click;
-                    if (board[cX][cY].isBoom) { // 第一下就踩雷了
+                    const [cY, cX] = click;
+                    if (board[cY][cX].isBoom) { // 第一下就踩雷了
                         const obj = {
                             data: 'X',// X炸弹
                             isShow: true,// 已翻开
