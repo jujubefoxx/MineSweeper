@@ -110,11 +110,21 @@
                     resultLevel: {
                         easy: {
                             0.49: '100%',
-                            1: '99%',
+                            2: '99%',
+                            10: '80%',
+                            20: '60%',
+                            50: '55%',
+                            100: '35%',
+                            200: '15%',
+                            350: '10%',
+                            500: '1%'
                         },
                         middle: {
                             7.03: '100%',
-                            1: '99%',
+                            15: '99%',
+                        },
+                        hard: {
+                            31.13: '100%'
                         }
                     },
                     boomNum: 10, // 炸弹数
@@ -215,6 +225,10 @@
                         isBoom: false
                     }));
                     [this.isInit, this.over, this.isSetFlag, this.gameInfo.time] = [false, false, false, 0];
+                    this.timer = setInterval(() => {
+                        const num = parseFloat(this.gameInfo.time) + 0.01
+                        this.gameInfo.time = num.toFixed(2)
+                    }, 10)
                 },
                 // 修改数组
                 editBoard(x, y, data) {
@@ -239,6 +253,7 @@
                             dy.push(randomY)
                         }
                     }
+                    console.log(dx.length)
                     // 修改炸弹数据
                     for (let i = 0; i < dx.length; i++) {
                         // console.log(JSON.stringify([dx[i]][dy[i]]))
