@@ -38,7 +38,7 @@
     </div>
     <div v-if="!isChoseLevel" class="level">
         <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
-            {{`${item.alias} （${item.xNum}×${item.yNum}）`}}
+            {{`${item.name} （${item.xNum}×${item.yNum}）`}}
         </div>
     </div>
     <div v-else>
@@ -68,7 +68,6 @@
                 </div>
             </div>
             <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
-            <div v-else-if="showCount === saveNum" class="bottom-tips">踩到地雷，游戏结束！</div>
         </div>
     </div>
 </div>
@@ -84,31 +83,44 @@
                     isChoseLevel: false,
                     //难度
                     config: [{
-                        alias: '青铜',
-                        xNum: 9,
-                        yNum: 9,
-                        boomNum: 10,
+                        alias: 'easy',
+                        name: '青铜',
+                        xNum: 9, // 列数
+                        yNum: 9, // 行数
+                        boomNum: 10, // 炸弹数
                     }, {
-                        alias: '白银',
+                        alias: 'middle',
+                        name: '白银',
                         xNum: 16,
                         yNum: 16,
                         boomNum: 40,
                     }, {
-                        alias: '黄金',
+                        alias: 'hard',
+                        name: '黄金',
                         xNum: 16,
                         yNum: 30,
                         boomNum: 99,
                     }],
                     gameInfo: {
-                        level: '青铜',
-                        time: 0,
-                        record: undefined,
-                        boomNum: '',
+                        alias: 'easy',
+                        level: '青铜', // 难度等级
+                        time: 0, // 时间
+                        record: undefined,// 最高纪录
+                    },
+                    resultLevel: {
+                        easy: {
+                            0.49: '100%',
+                            1: '99%',
+                        },
+                        middle: {
+                            7.03: '100%',
+                            1: '99%',
+                        }
                     },
                     boomNum: 10, // 炸弹数
                     flagNum: 0, // 旗帜数
                     isInit: false, // 保证第一个点击的格子不是雷
-                    board: [],
+                    board: [], // 棋盘
                     over: false, // 游戏是否结束
                     isSetFlag: false,// 是否插旗状态
                     timer: undefined,// 计时器
@@ -140,9 +152,19 @@
             },
             watch: {
                 showCount() {
+
+
                     if (this.over) return;
                     if (this.showCount === this.saveNum) {
+                        clearInterval(this.timer)
                         console.log('翻完了')
+                        vant.Dialog({
+                            message: `恭喜用时${this.gameInfo.time}秒挑战成功！击败了全国99%的玩家并打破了自己的最高纪录！`,
+                            confirmButtonColor: '#409eff',
+                            confirmButtonText: '重新开始',
+                        }).then(() => {
+                            this.restart();
+                        });
                     } else {
                         console.log('没翻完')
                     }
@@ -151,20 +173,23 @@
             methods: {
                 // 选择难度
                 choseLevel(item) {
-                    // vant.Dialog({ message: '提示' ,confirmButtonColor:'#409eff'});
-                    const {boomNum, xNum, yNum} = item;
+                    const {boomNum, xNum, yNum, name, alias} = item;
                     this.boomNum = boomNum;
                     this.board = new Array(yNum).fill(new Array(xNum).fill({
                         data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹 F旗帜(旗帜代表未翻开，但不能点击)
                         isShow: false,//是否翻开
                         isBoom: false //是否炸弹
                     }))
-                    this.gameInfo.level = item.alias;
+                    this.gameInfo = {
+                        ...this.gameInfo,
+                        level: name,
+                        alias
+                    }
                     this.isChoseLevel = true;
                     this.timer = setInterval(() => {
-                        this.gameInfo.time += 1
-                        console.log('1秒')
-                    }, 1000)
+                        const num = parseFloat(this.gameInfo.time) + 0.01
+                        this.gameInfo.time = num.toFixed(2)
+                    }, 10)
                 },
                 //插旗
                 setFlag(click, data, isBoom) {
