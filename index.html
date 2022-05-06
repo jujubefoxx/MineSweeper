@@ -27,7 +27,7 @@
                 时间:{{ gameInfo.time }}s
             </div>
             <div class="top-info__list">
-                剩余:{{ boomNum - flagNum }}
+                剩余:{{ boomNum - flagNum < 0 ? 0 : boomNum - flagNum }}
             </div>
             <div v-show="isChoseLevel" class="top-info__list">
                 最高纪录:{{ gameInfo.record ?? '无' }}
@@ -169,11 +169,14 @@
                         // 停止计时
                         clearInterval(this.timer)
                         // 击败玩家百分比
-                        let percent = '99';
+                        let percent = '0';
 
                         for (const key in scoreLevel[alias]) {
-                            if (time < key) {
+                            console.log(key)
+
+                            if (time <= key) {
                                 percent = scoreLevel[alias][key]
+                                console.log(key)
                                 break
                             }
                         }
