@@ -41,7 +41,7 @@
         <div class="board">
             <div v-for="(row,index) in board" class="board-row">
                 <div v-for="(column,key) in row"
-                     :class="['board-column',yNum <= 9?'board-column--small':yNum < 30?'board-column--middle':'board-column--large']"
+                     :class="['board-column',gameInfo.yNum <= 9?'board-column--small':gameInfo.yNum < 30?'board-column--middle':'board-column--large']"
                      @click="isSetFlag ? setFlag([index,key], column) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
                     <div :class="['board-column__list',column.isShow ? 'board-column__list--show':'board-column__list--unknown']">
                         <img v-if="column.data === 'X'" class="board-column__img" src="static/images/icon_boom1.svg"
@@ -264,7 +264,8 @@
                 restart() {
                     console.log(this.gameInfo)
                     const {yNum, xNum} = this.gameInfo;
-                    this.board = new Array(yNum).fill(new Array(xNum).fill({
+
+                    this.board = new Array(9).fill(new Array(9).fill({
                         data: '-1',
                         isShow: false,
                         isBoom: false
