@@ -46,7 +46,7 @@
             <div v-for="(row,index) in board" class="board-row">
                 <div v-for="(column,key) in row"
                      :class="['board-column',yNum <= 9?'board-column--small':yNum < 30?'board-column--middle':'board-column--large']"
-                     @click="isSetFlag ? setFlag([index,key], column.data , column.isBoom) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
+                     @click="isSetFlag ? setFlag([index,key], column) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
                     <div :class="['board-column__list',column.isShow ? 'board-column__list--show':'board-column__list--unknown']">
                         <img v-if="column.data === 'X'" class="board-column__img" src="static/images/icon_boom1.svg"
                              alt="炸弹">
@@ -199,6 +199,9 @@
                     }
                 }
             },
+            created() {
+                localStorage.setItem('easy_record', '张三')
+            },
             methods: {
                 // 选择难度
                 choseLevel(item) {
@@ -209,6 +212,7 @@
                         isShow: false,//是否翻开
                         isBoom: false //是否炸弹
                     }))
+                    const record = localStorage.getItem('easy_record')
                     this.gameInfo = {
                         ...this.gameInfo,
                         level: name,
@@ -221,8 +225,10 @@
                     }, 10)
                 },
                 //插旗
-                setFlag(click, data, isBoom) {
+                setFlag(click, column) {
                     const [cY, cX] = click;
+                    const {data, isBoom, isShow} = column;
+                    if (isShow) return; // 如果这个格子已经翻开 直接返回
                     const obj = {
                         data: 'F',// F旗帜
                         isShow: false,// 未翻开
