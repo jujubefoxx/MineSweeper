@@ -302,7 +302,7 @@
                     const inBound = (x, y) => x >= 0 && x < xNum && y >= 0 && y < yNum; // 辅助函数
 
                     const update = (x, y) => {
-                        if (!inBound(x, y) || board[y][x].isShow) return; // 不在界内或已翻开，直接返回
+                        if (!inBound(x, y) || board[y][x].isShow || board[y][x].data === 'F') return; // 不在界内或已插旗或已翻开，直接返回
                         let count = 0;
                         for (let i = 0; i < 8; i++) { // 统计周围雷的个数
                             const nX = x + dx[i];
