@@ -23,7 +23,7 @@
 <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget/autoload.js"></script>
 <div id="mineSweeper">
     <div class="top">
-        <div v-if="isChoseLevel" class="top-info">
+        <div v-if="hasChoseLevel" class="top-info">
             <div class="top-info__list">
                 <div>难度:{{ gameInfo.level }}</div>
                 <div>时间:{{ gameInfo.time }}s</div>
@@ -36,7 +36,7 @@
         <div v-else>请选择难度</div>
 
     </div>
-    <div v-if="!isChoseLevel" class="level">
+    <div v-if="!hasChoseLevel" class="level">
         <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
             {{`${item.level} （${item.xNum}×${item.yNum}）`}}
         </div>
@@ -80,7 +80,7 @@
             el: "#mineSweeper",
             data() {
                 return {
-                    isChoseLevel: false,
+                    hasChoseLevel: false,
                     //难度
                     config: [{
                         alias: 'easy',
@@ -110,6 +110,7 @@
                         yNum: 9, // 行数
                         boomNum: 10, // 炸弹数
                     },
+                    // 难度评级
                     scoreLevel: {
                         easy: {
                             0.49: '100',
@@ -221,7 +222,7 @@
                 // 打开难度选择页面
                 setLevelPage() {
                     clearInterval(this.timer); // 清除定时器
-                    this.isChoseLevel = false;
+                    this.hasChoseLevel = false;
                 },
 
                 /**
@@ -237,7 +238,7 @@
                         ...item,
                         record: localStorage.getItem(`${alias}_record`)
                     }
-                    this.isChoseLevel = true;
+                    this.hasChoseLevel = true;
                     this.restart();
                 },
 
