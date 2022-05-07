@@ -266,10 +266,9 @@
 
                 // 开始/重新开始
                 restart() {
-                    console.log(this.gameInfo)
                     const {yNum, xNum} = this.gameInfo;
 
-                    this.board = new Array(9).fill(new Array(9).fill({
+                    this.board = new Array(yNum).fill(new Array(xNum).fill({
                         data: '-1',
                         isShow: false,
                         isBoom: false
