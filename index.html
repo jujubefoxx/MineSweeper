@@ -25,8 +25,8 @@
                 <div>时间:{{ gameInfo.time }}s</div>
             </div>
             <div class="top-info__list">
-                <div>剩余:{{ boomNum - flagNum < 0 ? 0 : boomNum - flagNum }}</div>
-                <div>最高纪录:{{ gameInfo.record ?? '无' }}</div>
+                <div>剩余:{{ gameInfo.boomNum - flagNum < 0 ? 0 : gameInfo.boomNum - flagNum }}</div>
+                <div>最高纪录:{{ gameInfo.record ? `${gameInfo.record}s` : '无' }}</div>
             </div>
         </div>
         <div v-else>请选择难度</div>
@@ -34,7 +34,7 @@
     </div>
     <div v-if="!isChoseLevel" class="level">
         <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
-            {{`${item.name} （${item.xNum}×${item.yNum}）`}}
+            {{`${item.level} （${item.xNum}×${item.yNum}）`}}
         </div>
     </div>
     <div v-else>
@@ -80,19 +80,19 @@
                     //难度
                     config: [{
                         alias: 'easy',
-                        name: '青铜',
+                        level: '青铜',
                         xNum: 9, // 列数
                         yNum: 9, // 行数
                         boomNum: 10, // 炸弹数
                     }, {
                         alias: 'middle',
-                        name: '白银',
+                        level: '白银',
                         xNum: 16,
                         yNum: 16,
                         boomNum: 40,
                     }, {
                         alias: 'hard',
-                        name: '黄金',
+                        level: '黄金',
                         xNum: 16,
                         yNum: 30,
                         boomNum: 99,
@@ -102,6 +102,9 @@
                         level: '青铜', // 难度等级
                         time: 0, // 时间
                         record: undefined,// 最高纪录
+                        xNum: 9, // 列数
+                        yNum: 9, // 行数
+                        boomNum: 10, // 炸弹数
                     },
                     scoreLevel: {
                         easy: {
@@ -140,7 +143,6 @@
                             // 10000: '1'
                         }
                     },
-                    boomNum: 10, // 炸弹数
                     flagNum: 0, // 旗帜数
                     isInit: false, // 保证第一个点击的格子不是雷
                     board: [], // 棋盘
@@ -162,14 +164,8 @@
                     })
                     return num
                 },
-                yNum() {
-                    return this.board.length
-                },
-                xNum() {
-                    return this.board[0].length;
-                },
                 saveNum() {
-                    const {yNum, xNum, boomNum} = this;
+                    const {gameInfo: {xNum, yNum, boomNum}} = this;
                     return yNum * xNum - boomNum
                 },
             },
@@ -180,6 +176,7 @@
                     if (showCount === saveNum) {
                         // 停止计时
                         clearInterval(this.timer)
+
                         // 击败玩家百分比
                         let percent = '0';
 
@@ -192,47 +189,59 @@
                                 break
                             }
                         }
+
+                        // 判断是否为最高纪录
                         if (!record || parseFloat(time) < parseFloat(record)) {
                             localStorage.setItem(`${alias}_record`, time)
                             this.gameInfo.record = time;
                         }
 
-
+                        // 弹出对话框
                         vant.Dialog({
                             message: `恭喜用时${time}秒挑战成功！\n击败了${percent}%的玩家！\n您的最高纪录：${this.gameInfo.record}秒`,
                             confirmButtonColor: '#409eff',
                             confirmButtonText: '重新开始',
+                            cancelButtonText: '返回主页'
                         }).then(() => {
+                            // 重新开始
                             this.restart();
+                        }).catch(() => {
+                            // 返回主页
+                            this.setLevelPage();
                         });
-                    } else {
-                        console.log('没翻完')
                     }
                 }
             },
             methods: {
-                // 选择难度
+                // 打开难度选择页面
+                setLevelPage() {
+                    clearInterval(this.timer); // 清除定时器
+                    this.isChoseLevel = false;
+                },
+
+                /**
+                 * 选择难度
+                 *
+                 * @param   {Object} item 选择的难度数据
+                 */
                 choseLevel(item) {
-                    const {boomNum, xNum, yNum, name, alias} = item;
-                    this.boomNum = boomNum;
-                    this.board = new Array(yNum).fill(new Array(xNum).fill({
-                        data: '-1',//显示的值 -1未翻开 0翻开的空格子 数字1-9附近有炸弹 X炸弹 F旗帜(旗帜代表未翻开，但不能点击)
-                        isShow: false,//是否翻开
-                        isBoom: false //是否炸弹
-                    }))
+                    const {alias} = item;
+
                     this.gameInfo = {
                         ...this.gameInfo,
-                        record: localStorage.getItem(`${alias}_record`),
-                        level: name,
-                        alias
+                        ...item,
+                        record: localStorage.getItem(`${alias}_record`)
                     }
                     this.isChoseLevel = true;
-                    this.timer = setInterval(() => {
-                        const num = parseFloat(this.gameInfo.time) + 0.01
-                        this.gameInfo.time = num.toFixed(2)
-                    }, 10)
+                    this.restart();
                 },
-                //插旗
+
+                /**
+                 * 插旗
+                 *
+                 * @param   {Array} click 点击的坐标
+                 * @param   {Object} column 点击坐标数据
+                 */
                 setFlag(click, column) {
                     const [cY, cX] = click;
                     const {data, isBoom, isShow} = column;
@@ -250,9 +259,12 @@
                     }
                     this.editBoard(cX, cY, obj);
                 },
-                // 重新开始
+
+                // 开始/重新开始
                 restart() {
-                    this.board = new Array(this.yNum).fill(new Array(this.xNum).fill({
+                    console.log(this.gameInfo)
+                    const {yNum, xNum} = this.gameInfo;
+                    this.board = new Array(yNum).fill(new Array(xNum).fill({
                         data: '-1',
                         isShow: false,
                         isBoom: false
@@ -263,30 +275,42 @@
                         this.gameInfo.time = num.toFixed(2)
                     }, 10)
                 },
-                // 修改数组
+
+                /**
+                 * 修改坐标数据
+                 *
+                 * @param   {String|Number} x   需要修改的x坐标
+                 * @param   {String|Number} y   需要修改的y坐标
+                 * @param   {Object} data   改变后的数据
+                 */
                 editBoard(x, y, data) {
                     const {board} = this;
                     const row = [...board[y]];// 获取那一行的数据
                     row.splice(x, 1, data) // 修改
                     this.$set(board, y, row)
                 },
-                // 初始化棋盘
+
+                /**
+                 * 初始化棋盘
+                 * @return  {Promise}   Promise
+                 * @param   {Array} click 点击的坐标
+                 *
+                 **/
                 setBoom(click) {
-                    const {xNum, yNum, boomNum} = this;
+                    const {gameInfo: {xNum, yNum, boomNum}} = this;
                     const [cY, cX] = click;
                     const dx = [], dy = [];
                     //生成炸弹
                     while (dx.length < boomNum) {
                         const randomX = Math.round(Math.random() * (xNum - 1));//获取一个范围内的随机数
                         const randomY = Math.round(Math.random() * (yNum - 1));//获取一个范围内的随机数
-                        const isClick = (randomX === parseInt(cX)) && (randomY === parseInt(cY))
+                        const isClick = (randomX === parseInt(cX)) && (randomY === parseInt(cY));// 是否点击的坐标
                         if (!isClick && (dx.indexOf(randomX) === -1 || dx.indexOf(randomX) !== dy.indexOf(randomY))) {
-                            // 如果没有重复则推入
+                            // 如果没有重复且不是点击的坐标则推入
                             dx.push(randomX)
                             dy.push(randomY)
                         }
                     }
-                    console.log(dx.length)
                     // 修改炸弹数据
                     for (let i = 0; i < dx.length; i++) {
                         // console.log(JSON.stringify([dx[i]][dy[i]]))
@@ -301,9 +325,14 @@
                     this.isInit = true;
                     this.updateBoard(click);
                 },
-                // 更新格子状态
-                updateBoard(click, data) {
-                    const {board, over, yNum, xNum} = this;
+                /**
+                 * 更新格子状态
+                 *
+                 * @param   {Array} click 点击的坐标
+                 * @param   {Object} data 点击坐标数据值
+                 */
+                updateBoard(click, data = undefined) {
+                    const {board, over, gameInfo: {xNum, yNum}} = this;
                     if (over || data === 'F') return;// 如果游戏已经结束或为旗帜 直接返回
                     const dx = [1, -1, 0, 0, -1, 1, -1, 1]; // 横坐标
                     const dy = [0, 0, 1, -1, 1, -1, -1, 1]; // 纵坐标
