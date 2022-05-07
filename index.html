@@ -196,7 +196,7 @@
                                 break
                             }
                         }
-                        if (parseFloat(time) < parseFloat(record)) {
+                        if (!record || parseFloat(time) < parseFloat(record)) {
                             localStorage.setItem(`${alias}_record`, JSON.stringify(time))
                             this.gameInfo.record = time;
                         }
