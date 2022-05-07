@@ -21,16 +21,12 @@
     <div class="top">
         <div v-if="isChoseLevel" class="top-info">
             <div class="top-info__list">
-                难度:{{ gameInfo.level }}
+                <div>难度:{{ gameInfo.level }}</div>
+                <div>时间:{{ gameInfo.time }}s</div>
             </div>
             <div class="top-info__list">
-                时间:{{ gameInfo.time }}s
-            </div>
-            <div class="top-info__list">
-                剩余:{{ boomNum - flagNum < 0 ? 0 : boomNum - flagNum }}
-            </div>
-            <div v-show="isChoseLevel" class="top-info__list">
-                最高纪录:{{ gameInfo.record ?? '无' }}
+                <div>剩余:{{ boomNum - flagNum < 0 ? 0 : boomNum - flagNum }}</div>
+                <div>最高纪录:{{ gameInfo.record ?? '无' }}</div>
             </div>
         </div>
         <div v-else>请选择难度</div>
@@ -197,13 +193,13 @@
                             }
                         }
                         if (!record || parseFloat(time) < parseFloat(record)) {
-                            localStorage.setItem(`${alias}_record`, JSON.stringify(time))
+                            localStorage.setItem(`${alias}_record`, time)
                             this.gameInfo.record = time;
                         }
 
 
                         vant.Dialog({
-                            message: `恭喜用时${time}秒挑战成功！击败了${percent}%的玩家！\n最高纪录：${this.gameInfo.record}s`,
+                            message: `恭喜用时${time}秒挑战成功！\n击败了${percent}%的玩家！\n您的最高纪录：${this.gameInfo.record}秒`,
                             confirmButtonColor: '#409eff',
                             confirmButtonText: '重新开始',
                         }).then(() => {
