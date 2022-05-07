@@ -110,21 +110,29 @@
                     scoreLevel: {
                         easy: {
                             0.49: '100',
-                            2: '99',
-                            10: '80',
-                            20: '60',
-                            50: '55',
-                            100: '35',
-                            200: '15',
-                            350: '10',
-                            500: '1'
+                            10: '99',
+                            30: '88',
+                            80: '66',
+                            150: '55',
+                            300: '35',
+                            500: '15',
+                            800: '10',
+                            1000: '1'
                         },
                         middle: {
                             7.03: '100',
-                            15: '99',
+                            // 60: '99',
                         },
                         hard: {
-                            31.13: '100'
+                            31.13: '100',
+                            // 300: '99',
+                            // 1000: '88',
+                            // 80: '66',
+                            // 150: '55',
+                            // 1200: '35',
+                            // 500: '15',
+                            // 800: '10',
+                            // 10000: '1'
                         }
                     },
                     boomNum: 10, // 炸弹数
@@ -163,7 +171,6 @@
             watch: {
                 showCount() {
                     const {gameInfo: {time, alias}, over, showCount, saveNum, scoreLevel} = this;
-
                     if (over) return; // 处理最后一个点击到炸弹的异常情况
                     if (showCount === saveNum) {
                         // 停止计时
@@ -174,9 +181,9 @@
                         for (const key in scoreLevel[alias]) {
                             console.log(key)
 
-                            if (time <= key) {
+                            if (parseFloat(time) < key) {
                                 percent = scoreLevel[alias][key]
-                                console.log(key)
+                                console.log(key, '是这里', percent)
                                 break
                             }
                         }
