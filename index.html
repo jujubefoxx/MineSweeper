@@ -110,18 +110,27 @@
                     scoreLevel: {
                         easy: {
                             0.49: '100',
-                            10: '99',
-                            30: '88',
-                            80: '66',
-                            150: '55',
-                            300: '35',
-                            500: '15',
-                            800: '10',
-                            1000: '1'
+                            30: '99',
+                            60: '88',
+                            100: '77',
+                            120: '66',
+                            240: '55',
+                            500: '35',
+                            800: '15',
+                            1000: '10',
+                            1300: '1'
                         },
                         middle: {
                             7.03: '100',
-                            // 60: '99',
+                            70: '99',
+                            150: '88',
+                            100: '77',
+                            120: '66',
+                            240: '55',
+                            500: '35',
+                            800: '15',
+                            1000: '10',
+                            1300: '1'
                         },
                         hard: {
                             31.13: '100',
@@ -170,7 +179,7 @@
             },
             watch: {
                 showCount() {
-                    const {gameInfo: {time, alias}, over, showCount, saveNum, scoreLevel} = this;
+                    const {gameInfo: {time, alias, record}, over, showCount, saveNum, scoreLevel} = this;
                     if (over) return; // 处理最后一个点击到炸弹的异常情况
                     if (showCount === saveNum) {
                         // 停止计时
@@ -187,8 +196,14 @@
                                 break
                             }
                         }
+                        if (parseFloat(time) < parseFloat(record)) {
+                            localStorage.setItem(`${alias}_record`, JSON.stringify(time))
+                            this.gameInfo.record = time;
+                        }
+
+
                         vant.Dialog({
-                            message: `恭喜用时${time}秒挑战成功！击败了全国${percent}%的玩家并打破了自己的最高纪录！`,
+                            message: `恭喜用时${time}秒挑战成功！击败了${percent}%的玩家！\n最高纪录：${this.gameInfo.record}s`,
                             confirmButtonColor: '#409eff',
                             confirmButtonText: '重新开始',
                         }).then(() => {
@@ -198,9 +213,6 @@
                         console.log('没翻完')
                     }
                 }
-            },
-            created() {
-                localStorage.setItem('easy_record', '张三')
             },
             methods: {
                 // 选择难度
@@ -212,9 +224,9 @@
                         isShow: false,//是否翻开
                         isBoom: false //是否炸弹
                     }))
-                    const record = localStorage.getItem('easy_record')
                     this.gameInfo = {
                         ...this.gameInfo,
+                        record: localStorage.getItem(`${alias}_record`),
                         level: name,
                         alias
                     }
