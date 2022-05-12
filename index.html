@@ -61,10 +61,13 @@
         </div>
         <div class="bottom">
             <div class="bottom-button">
-                <div class="bottom-button__list bottom-button__restart" @click="restart">重新开始</div>
                 <div :class="['bottom-button__list bottom-button__flag',isSetFlag ? 'bottom-button__flag--active':'']"
                      @click="isSetFlag = !isSetFlag">
                     插旗
+                </div>
+                <div>
+                    <div class="bottom-button__list bottom-button__choose" @click="setLevelPage">重新选择难度</div>
+                    <div class="bottom-button__list bottom-button__restart" @click="restart">重新开始</div>
                 </div>
             </div>
             <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
