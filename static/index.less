@@ -1,3 +1,17 @@
+// 自定义
+.custom {
+  text-align: center;
+  margin: 10px auto;
+
+  &-wrapper {
+    width: 300px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 4px;
+  }
+}
+
 //顶部
 .top {
   margin: 10px auto;
@@ -26,8 +40,11 @@
   //flex-direction: column;
   //justify-content: space-around;
   max-width: 370px;
+  background: whitesmoke;
   //min-height: 360px;
+  //padding: 10px;
   margin: 10px auto;
+  //border: 2px dashed #409eff;
 
   &-row {
     display: flex;
@@ -80,7 +97,7 @@
       }
 
       &--show {
-        background: whitesmoke;
+        background: #fff;
         box-shadow: gainsboro 2px 2px inset;
       }
     }
@@ -116,23 +133,20 @@
 
     &__list {
       display: inline-block;
-      line-height: 1;
+      width: 130px;
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
       white-space: nowrap;
       cursor: pointer;
       background: #fff;
       border: 1px solid #dcdfe6;
       color: #606266;
-      -webkit-appearance: none;
-      text-align: center;
       box-sizing: border-box;
       outline: none;
       margin: 10px;
       transition: .1s;
       font-weight: 500;
-      -moz-user-select: none;
-      -webkit-user-select: none;
-      -ms-user-select: none;
-      padding: 12px 20px;
       font-size: 14px;
       border-radius: 4px;
     }

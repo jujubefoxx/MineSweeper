@@ -34,14 +34,14 @@
             </div>
         </div>
         <div v-else>请选择难度</div>
-
     </div>
     <div v-if="!hasChoseLevel" class="level">
         <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
             {{`${item.level} （${item.xNum}×${item.yNum}）`}}
         </div>
+        <div class="level-"></div>
     </div>
-    <div v-else>
+    <div v-else class="game-content">
         <div class="board">
             <div v-for="(row,index) in board" class="board-row">
                 <div v-for="(column,key) in row"
@@ -65,14 +65,26 @@
                      @click="isSetFlag = !isSetFlag">
                     插旗
                 </div>
-                <div>
-                    <div class="bottom-button__list bottom-button__choose" @click="setLevelPage">重新选择难度</div>
-                    <div class="bottom-button__list bottom-button__restart" @click="restart">重新开始</div>
-                </div>
+                <div class="bottom-button__list bottom-button__restart" @click="restart">重新开始</div>
+                <div class="bottom-button__list bottom-button__choose" @click="setLevelPage">重新选择难度</div>
             </div>
             <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
         </div>
     </div>
+    <div class="custom">
+        <van-button plain type="info" @click="showOverlay = true">自定义棋盘图片</van-button>
+    </div>
+    <van-overlay :show="showOverlay" @click="showOverlay = false">
+        <div class="custom-wrapper" @click.stop>
+            <van-uploader v-model="fileList"
+                          :max-size="1000 * 1024"
+                          :after-read="afterRead"
+                          :max-count="1"
+                          :deletable="false"
+                          @oversize="onOversize"></van-uploader>
+            请上传小于1M的图片(建议使用白色或透明底图片)
+        </div>
+    </van-overlay>
 </div>
 <!--&lt;!&ndash;引入cdn&ndash;&gt;-->
 <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
@@ -83,7 +95,9 @@
             el: "#mineSweeper",
             data() {
                 return {
+                    showOverlay: false,// 遮罩层
                     hasChoseLevel: false,
+                    fileList: [],
                     //难度
                     config: [{
                         alias: 'easy',
@@ -228,7 +242,15 @@
                     clearInterval(this.timer); // 清除定时器
                     this.hasChoseLevel = false;
                 },
-
+                // 上传回调
+                afterRead(file) {
+                    // 此时可以自行将文件上传至服务器
+                    console.log(file);
+                },
+                onOversize(file) {
+                    console.log(file);
+                    vant.Toast('文件大小不能超过1M');
+                },
                 /**
                  * 选择难度
                  *
