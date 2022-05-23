@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -35,12 +35,17 @@
         </div>
         <div v-else>请选择难度</div>
     </div>
-    <div v-if="!hasChoseLevel" class="level">
-        <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
-            {{`${item.level} （${item.xNum}×${item.yNum}）`}}
+    <div v-if="!hasChoseLevel">
+        <div class="level">
+            <div class="level-list" v-for="(item,index) in config" :key="index" @click="choseLevel(item)">
+                {{`${item.level} （${item.xNum}×${item.yNum}）`}}
+            </div>
         </div>
-        <div class="level-"></div>
+        <div class="custom">
+            <van-button plain type="info" @click="showOverlay = true">自定义棋盘图片</van-button>
+        </div>
     </div>
+
     <div v-else class="game-content">
         <div class="board">
             <div v-for="(row,index) in board" class="board-row">
@@ -71,18 +76,61 @@
             <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
         </div>
     </div>
-    <div class="custom">
-        <van-button plain type="info" @click="showOverlay = true">自定义棋盘图片</van-button>
-    </div>
     <van-overlay :show="showOverlay" @click="showOverlay = false">
         <div class="custom-wrapper" @click.stop>
-            <van-uploader v-model="fileList"
-                          :max-size="1000 * 1024"
-                          :after-read="afterRead"
-                          :max-count="1"
-                          :deletable="false"
-                          @oversize="onOversize"></van-uploader>
-            请上传小于1M的图片(建议使用白色或透明底图片)
+            <div class="custom-wrapper__upload">
+                <div class="custom-wrapper__upload-list custom-wrapper__upload-list-boom">
+                    <div class="custom-wrapper__upload-list__title">地雷</div>
+                    <van-uploader v-model="fileList"
+                                  :max-size="1000 * 1024"
+                                  :after-read="(file)=> afterRead(file,'boom')"
+                                  :max-count="1"
+                                  :deletable="false"
+                                  @oversize="onOversize"></van-uploader>
+                </div>
+                <div class="custom-wrapper__upload-list custom-wrapper__upload-list--flag">
+                    <div class="custom-wrapper__upload-list__title">旗帜</div>
+                    <van-uploader v-model="fileList"
+                                  :max-size="1000 * 1024"
+                                  :after-read="(file)=> afterRead(file,'flag')"
+                                  :max-count="1"
+                                  :deletable="false"
+                                  @oversize="onOversize"></van-uploader>
+                </div>
+            </div>
+
+            <div class="custom-wrapper__tips">
+                请上传小于1M的图片(建议使用白色或透明底图片)<br/>
+                注意:清除缓存会还原设置的图片
+            </div>
+            <div class="custom-wrapper__preview">
+                <div class="custom-wrapper__preview-title">预览效果</div>
+                <div class="custom-wrapper__preview-board">
+                    <div class="board">
+                        <div class="board-row">
+                            <div :class="['board-column','board-column--small']">
+                                <div :class="['board-column__list','board-column__list--unknown']">
+                                </div>
+                            </div>
+                            <div :class="['board-column','board-column--small']">
+                                <div :class="['board-column__list','board-column__list--show']">
+                                    <img class="board-column__img"
+                                         src="static/images/icon_boom1.svg"
+                                         alt="炸弹">
+                                </div>
+                            </div>
+                            <div :class="['board-column','board-column--small']">
+                                <div :class="['board-column__list','board-column__list--show']">
+                                    <img class="board-column__img"
+                                         src="static/images/flag.svg"
+                                         alt="旗帜">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </van-overlay>
 </div>
@@ -243,9 +291,9 @@
                     this.hasChoseLevel = false;
                 },
                 // 上传回调
-                afterRead(file) {
-                    // 此时可以自行将文件上传至服务器
-                    console.log(file);
+                afterRead(file, string) {
+                    // 保存图片到本地缓存
+                    console.log(file, string);
                 },
                 onOversize(file) {
                     console.log(file);

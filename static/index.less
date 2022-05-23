@@ -1,7 +1,7 @@
 // 自定义
 .custom {
   text-align: center;
-  margin: 10px auto;
+  margin: 20px auto;
 
   &-wrapper {
     width: 300px;
@@ -9,6 +9,31 @@
     padding: 20px;
     background: #fff;
     border-radius: 4px;
+
+    &__upload {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 10px 0;
+
+      &-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        &__title {
+          font-size: 14px;
+          margin-bottom: 10px;
+        }
+      }
+    }
+
+    &__tips {
+      font-size: 12px;
+      color: #606266;
+      text-align: center;
+    }
   }
 }
 
@@ -42,7 +67,7 @@
   max-width: 370px;
   background: whitesmoke;
   //min-height: 360px;
-  //padding: 10px;
+  padding: 10px;
   margin: 10px auto;
   //border: 2px dashed #409eff;
 

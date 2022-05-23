@@ -13,5 +13,6 @@
 9. 缓存记录最高纪录(已完成)
 10. 重选难度(已完成)
 11. 定制雷/棋图
+12. 修改地雷数字图片
 
 > 在线网页： https://jujubefoxx.github.io/MineSweeper/
