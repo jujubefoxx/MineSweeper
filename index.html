@@ -65,7 +65,11 @@
                              :class="['board-column__img',!isSetFlag ? 'board-column__img--disable' : '']"
                              :src="flagImg"
                              alt="旗帜">
-                        <div v-else-if="parseInt(column.data) > 0">{{ column.data }}</div>
+                        <!--                        <div v-else-if="parseInt(column.data) > 0">{{ column.data }}</div>-->
+                        <img v-else-if="parseInt(column.data) > 0"
+                             class="board-column__img board-column__img--number"
+                             :src="`static/images/shuzi${column.data}.svg`"
+                             :alt="column.data">
                     </div>
                 </div>
             </div>
@@ -99,7 +103,8 @@
                               @oversize="onOversize">
                     <van-button icon="plus" type="default">更换旗帜图标</van-button>
                 </van-uploader>
-                <van-button class="custom-wrapper__upload-list" icon="replay" type="default">还原默认图标</van-button>
+                <van-button class="custom-wrapper__upload-list" icon="replay" type="default" @click="resetImg">还原默认图标
+                </van-button>
             </div>
 
             <div class="custom-wrapper__preview">
@@ -118,7 +123,7 @@
                             </div>
                         </div>
                         <div :class="['board-column','board-column--small']">
-                            <div :class="['board-column__list','board-column__list--show']">
+                            <div :class="['board-column__list','board-column__list--unknown']">
                                 <img class="board-column__img"
                                      :src="flagImg"
                                      alt="旗帜">
@@ -295,6 +300,13 @@
 
             },
             methods: {
+                // 还原默认图标
+                resetImg() {
+                    this.boomImg = 'static/images/icon_boom1.svg';
+                    this.flagImg = 'static/images/flag.svg';
+                    localStorage.removeItem('boom_img');
+                    localStorage.removeItem('flag_img');
+                },
                 // 打开难度选择页面
                 setLevelPage() {
                     clearInterval(this.timer); // 清除定时器
