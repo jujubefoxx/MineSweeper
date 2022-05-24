@@ -7,20 +7,26 @@
     <link rel="stylesheet/less" href="static/index.less">
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js"></script>
     <!-- 引入样式文件 -->
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/vant@2.12/lib/index.css"
-    />
+    <link rel="stylesheet" href="utils/index.css">
+
+    <!--    <link-->
+    <!--            rel="stylesheet"-->
+    <!--            href="https://cdn.jsdelivr.net/npm/vant@2.12/lib/index.css"-->
+    <!--    />-->
 
     <script src="utils/vue.js"></script>
     <!-- 引入Vant 的 JS 文件 -->
-    <script src="https://cdn.jsdelivr.net/npm/vant@2.12/lib/vant.min.js"></script>
+    <script src="utils/vant.min.js"></script>
+
+    <!--    <script src="https://cdn.jsdelivr.net/npm/vant@2.12/lib/vant.min.js"></script>-->
 </head>
 <body>
 <!-- 看板娘 -->
 <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css"/>
 <script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget/autoload.js"></script>
+
+
 <div id="mineSweeper">
     <div class="top">
         <div v-if="hasChoseLevel" class="top-info">
@@ -53,11 +59,11 @@
                      :class="['board-column',gameInfo.yNum <= 9?'board-column--small':gameInfo.yNum < 30?'board-column--middle':'board-column--large']"
                      @click="isSetFlag ? setFlag([index,key], column) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
                     <div :class="['board-column__list',column.isShow ? 'board-column__list--show':'board-column__list--unknown']">
-                        <img v-if="column.data === 'X'" class="board-column__img" src="static/images/icon_boom1.svg"
+                        <img v-if="column.data === 'X'" class="board-column__img" :src="boomSvg"
                              alt="炸弹">
                         <img v-else-if="column.data === 'F'"
                              :class="['board-column__img',!isSetFlag ? 'board-column__img--disable' : '']"
-                             src="static/images/flag.svg"
+                             :src="flagSvg"
                              alt="旗帜">
                         <div v-else-if="parseInt(column.data) > 0">{{ column.data }}</div>
                     </div>
@@ -79,56 +85,51 @@
     <van-overlay :show="showOverlay" @click="showOverlay = false">
         <div class="custom-wrapper" @click.stop>
             <div class="custom-wrapper__upload">
-                <div class="custom-wrapper__upload-list custom-wrapper__upload-list-boom">
-                    <div class="custom-wrapper__upload-list__title">地雷</div>
-                    <van-uploader v-model="fileList"
-                                  :max-size="1000 * 1024"
-                                  :after-read="(file)=> afterRead(file,'boom')"
-                                  :max-count="1"
-                                  :deletable="false"
-                                  @oversize="onOversize"></van-uploader>
-                </div>
-                <div class="custom-wrapper__upload-list custom-wrapper__upload-list--flag">
-                    <div class="custom-wrapper__upload-list__title">旗帜</div>
-                    <van-uploader v-model="fileList"
-                                  :max-size="1000 * 1024"
-                                  :after-read="(file)=> afterRead(file,'flag')"
-                                  :max-count="1"
-                                  :deletable="false"
-                                  @oversize="onOversize"></van-uploader>
-                </div>
+                <van-uploader class="custom-wrapper__upload-list"
+                              :before-read="beforeRead"
+                              :max-size="1000 * 1024"
+                              :after-read="(file)=> afterRead(file,'boom')"
+                              @oversize="onOversize">
+                    <van-button icon="plus" type="default">更换地雷图标</van-button>
+                </van-uploader>
+                <van-uploader class="custom-wrapper__upload-list"
+                              :before-read="beforeRead"
+                              :max-size="1000 * 1024"
+                              :after-read="(file)=> afterRead(file,'flag')"
+                              @oversize="onOversize">
+                    <van-button icon="plus" type="default">更换旗帜图标</van-button>
+                </van-uploader>
+                <van-button class="custom-wrapper__upload-list" icon="replay" type="default">还原默认图标</van-button>
             </div>
 
-            <div class="custom-wrapper__tips">
-                请上传小于1M的图片(建议使用白色或透明底图片)<br/>
-                注意:清除缓存会还原设置的图片
-            </div>
             <div class="custom-wrapper__preview">
                 <div class="custom-wrapper__preview-title">预览效果</div>
                 <div class="custom-wrapper__preview-board">
-                    <div class="board">
-                        <div class="board-row">
-                            <div :class="['board-column','board-column--small']">
-                                <div :class="['board-column__list','board-column__list--unknown']">
-                                </div>
+                    <div class="board-row">
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--unknown']">
                             </div>
-                            <div :class="['board-column','board-column--small']">
-                                <div :class="['board-column__list','board-column__list--show']">
-                                    <img class="board-column__img"
-                                         src="static/images/icon_boom1.svg"
-                                         alt="炸弹">
-                                </div>
+                        </div>
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--show']">
+                                <img class="board-column__img"
+                                     :src="boomSvg"
+                                     alt="炸弹">
                             </div>
-                            <div :class="['board-column','board-column--small']">
-                                <div :class="['board-column__list','board-column__list--show']">
-                                    <img class="board-column__img"
-                                         src="static/images/flag.svg"
-                                         alt="旗帜">
-                                </div>
+                        </div>
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--show']">
+                                <img class="board-column__img"
+                                     :src="flagSvg"
+                                     alt="旗帜">
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="custom-wrapper__tips">
+                请上传小于1M的图片(建议使用白色或透明底图片)<br/>
+                注意:清除缓存会还原设置的图片
             </div>
 
         </div>
@@ -145,7 +146,8 @@
                 return {
                     showOverlay: false,// 遮罩层
                     hasChoseLevel: false,
-                    fileList: [],
+                    boomSvg: 'static/images/icon_boom1.svg',
+                    flagSvg: 'static/images/flag.svg',
                     //难度
                     config: [{
                         alias: 'easy',
@@ -284,16 +286,27 @@
                     }
                 }
             },
+            created() {
+            },
             methods: {
                 // 打开难度选择页面
                 setLevelPage() {
                     clearInterval(this.timer); // 清除定时器
                     this.hasChoseLevel = false;
                 },
+                // 返回布尔值
+                beforeRead(file) {
+                    if (file.type.indexOf('image') === -1) {
+                        vant.Toast('请上传正确的图片');
+                        return false;
+                    }
+                    return true;
+                },
                 // 上传回调
                 afterRead(file, string) {
                     // 保存图片到本地缓存
-                    console.log(file, string);
+                    console.log(file.content, string);
+                    this[`${string}Svg`] = file.content;
                 },
                 onOversize(file) {
                     console.log(file);
