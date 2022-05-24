@@ -59,11 +59,11 @@
                      :class="['board-column',gameInfo.yNum <= 9?'board-column--small':gameInfo.yNum < 30?'board-column--middle':'board-column--large']"
                      @click="isSetFlag ? setFlag([index,key], column) : isInit ? updateBoard([index,key],column.data) : setBoom([index,key])">
                     <div :class="['board-column__list',column.isShow ? 'board-column__list--show':'board-column__list--unknown']">
-                        <img v-if="column.data === 'X'" class="board-column__img" :src="boomSvg"
+                        <img v-if="column.data === 'X'" class="board-column__img" :src="boomImg"
                              alt="炸弹">
                         <img v-else-if="column.data === 'F'"
                              :class="['board-column__img',!isSetFlag ? 'board-column__img--disable' : '']"
-                             :src="flagSvg"
+                             :src="flagImg"
                              alt="旗帜">
                         <div v-else-if="parseInt(column.data) > 0">{{ column.data }}</div>
                     </div>
@@ -113,14 +113,14 @@
                         <div :class="['board-column','board-column--small']">
                             <div :class="['board-column__list','board-column__list--show']">
                                 <img class="board-column__img"
-                                     :src="boomSvg"
+                                     :src="boomImg"
                                      alt="炸弹">
                             </div>
                         </div>
                         <div :class="['board-column','board-column--small']">
                             <div :class="['board-column__list','board-column__list--show']">
                                 <img class="board-column__img"
-                                     :src="flagSvg"
+                                     :src="flagImg"
                                      alt="旗帜">
                             </div>
                         </div>
@@ -146,8 +146,8 @@
                 return {
                     showOverlay: false,// 遮罩层
                     hasChoseLevel: false,
-                    boomSvg: 'static/images/icon_boom1.svg',
-                    flagSvg: 'static/images/flag.svg',
+                    boomImg: 'static/images/icon_boom1.svg',
+                    flagImg: 'static/images/flag.svg',
                     //难度
                     config: [{
                         alias: 'easy',
@@ -287,6 +287,12 @@
                 }
             },
             created() {
+                ['boom', 'flag'].forEach((item) => {
+                    if (localStorage.getItem(`${item}_img`)) {
+                        this[`${string}Img`] = localStorage.getItem(`${item}_img`);
+                    }
+                })
+
             },
             methods: {
                 // 打开难度选择页面
@@ -305,8 +311,8 @@
                 // 上传回调
                 afterRead(file, string) {
                     // 保存图片到本地缓存
-                    console.log(file.content, string);
-                    this[`${string}Svg`] = file.content;
+                    localStorage.setItem(`${string}_img`, file.content)
+                    this[`${string}Img`] = file.content;
                 },
                 onOversize(file) {
                     console.log(file);
