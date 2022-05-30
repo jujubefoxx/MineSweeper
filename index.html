@@ -306,6 +306,7 @@
                     this.flagImg = 'static/images/flag.svg';
                     localStorage.removeItem('boom_img');
                     localStorage.removeItem('flag_img');
+                    vant.Toast('还原成功');
                 },
                 // 打开难度选择页面
                 setLevelPage() {
@@ -325,6 +326,7 @@
                     // 保存图片到本地缓存
                     localStorage.setItem(`${string}_img`, file.content)
                     this[`${string}Img`] = file.content;
+                    vant.Toast('上传成功');
                 },
                 onOversize(file) {
                     console.log(file);
