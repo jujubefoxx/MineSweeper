@@ -76,12 +76,17 @@
         </div>
         <div class="bottom">
             <div class="bottom-button">
-                <div :class="['bottom-button__list bottom-button__flag',isSetFlag ? 'bottom-button__flag--active':'']"
+                <div v-if="!over"
+                     :class="['bottom-button__list bottom-button__flag',isSetFlag ? 'bottom-button__flag--active':'']"
                      @click="isSetFlag = !isSetFlag">
                     插旗
                 </div>
-                <div class="bottom-button__list bottom-button__restart" @click="handleRestart">重新开始</div>
-                <div class="bottom-button__list bottom-button__choose" @click="handleRestart(false)">重新选择难度</div>
+                <div class="bottom-button__list bottom-button__restart"
+                     @click="handleRestart">重新开始
+                </div>
+                <div class="bottom-button__list bottom-button__choose"
+                     @click="handleRestart(false)">重新选择难度
+                </div>
             </div>
             <div v-if="over" class="bottom-tips">踩到地雷，游戏结束！</div>
         </div>
@@ -304,14 +309,7 @@
                 handleRestart(isRestart = true) {
                     // 停止计时
                     clearInterval(this.timer)
-                    // 弹出对话框
-                    vant.Dialog({
-                        message: `确认要重新${isRestart ? '开始' : '选择难度'}吗?`,
-                        confirmButtonColor: '#409eff',
-                        confirmButtonText: '确认',
-                        showCancelButton: true,
-                        cancelButtonText: '取消'
-                    }).then(() => {
+                    if (this.over) {
                         if (isRestart) {
                             // 重新开始
                             this.restart();
@@ -319,13 +317,31 @@
                             // 返回主页
                             this.setLevelPage();
                         }
-                    }).catch(() => {
-                        // 重新计时
-                        this.timer = setInterval(() => {
-                            const num = parseFloat(this.gameInfo.time) + 0.01
-                            this.gameInfo.time = num.toFixed(2)
-                        }, 10)
-                    });
+                    } else {
+                        // 弹出对话框
+                        vant.Dialog({
+                            message: `确认要重新${isRestart ? '开始' : '选择难度'}吗?`,
+                            confirmButtonColor: '#409eff',
+                            confirmButtonText: '确认',
+                            showCancelButton: true,
+                            cancelButtonText: '取消'
+                        }).then(() => {
+                            if (isRestart) {
+                                // 重新开始
+                                this.restart();
+                            } else {
+                                // 返回主页
+                                this.setLevelPage();
+                            }
+                        }).catch(() => {
+                            // 重新计时
+                            this.timer = setInterval(() => {
+                                const num = parseFloat(this.gameInfo.time) + 0.01
+                                this.gameInfo.time = num.toFixed(2)
+                            }, 10)
+                        });
+                    }
+
                 },
                 // 还原默认图标
                 resetImg() {
