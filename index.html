@@ -96,14 +96,12 @@
             <div class="custom-wrapper__upload">
                 <van-uploader class="custom-wrapper__upload-list"
                               :before-read="beforeRead"
-                              :max-size="1000 * 1024"
                               :after-read="(file)=> afterRead(file,'boom')"
                               @oversize="onOversize">
                     <van-button icon="plus" type="default">更换地雷图标</van-button>
                 </van-uploader>
                 <van-uploader class="custom-wrapper__upload-list"
                               :before-read="beforeRead"
-                              :max-size="1000 * 1024"
                               :after-read="(file)=> afterRead(file,'flag')"
                               @oversize="onOversize">
                     <van-button icon="plus" type="default">更换旗帜图标</van-button>
@@ -138,7 +136,7 @@
                 </div>
             </div>
             <div class="custom-wrapper__tips">
-                请上传小于1M的图片(建议使用白色或透明底图片)<br/>
+                请上传图片(建议使用白色或透明底的正方形图片)<br/>
                 注意:清除缓存会还原设置的图片
             </div>
 
@@ -365,15 +363,43 @@
                     return true;
                 },
                 // 上传回调
-                afterRead(file, string) {
+                afterRead(files, string) {
+                    const {file} = files;
+                    console.log(files, file)
                     // 保存图片到本地缓存
-                    localStorage.setItem(`${string}_img`, file.content)
-                    this[`${string}Img`] = file.content;
-                    vant.Toast('上传成功');
+                    let canvas = document.createElement('canvas') // 创建Canvas对象(画布)
+                    let context = canvas.getContext('2d')
+                    let img = new Image()
+                    img.src = files.content
+                    img.onload = () => {
+
+                        canvas.width = 100
+
+                        canvas.height = 100
+
+                        context.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+                        if (file.size > 2 * 1024) {
+                            //如果图片大小大于2M
+                            vant.Toast.loading({
+                                message: '正在压缩图片...',
+                                forbidClick: true,
+                            });
+                            files.content = canvas.toDataURL(file.type)
+                            localStorage.setItem(`${string}_img`, files.content)
+                            this[`${string}Img`] = files.content;
+                            vant.Toast('上传成功');
+                        } else {
+                            localStorage.setItem(`${string}_img`, files.content)
+                            this[`${string}Img`] = files.content;
+                            vant.Toast('上传成功');
+                        }
+
+                    }
+
                 },
                 onOversize(file) {
                     console.log(file);
-                    vant.Toast('文件大小不能超过1M');
                 },
                 /**
                  * 选择难度
