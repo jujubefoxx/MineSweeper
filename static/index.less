@@ -1,13 +1,4 @@
-//.vue-cropper {
-//  background: #000;
-//
-//  .cropper-view-box {
-//    outline: 1px solid #fff !important;
-//    outline-color: #fff !important;
-//  }
-//}
-
-// 自定义
+// 自定义遮罩层
 .custom {
   text-align: center;
   margin: 20px auto;
@@ -60,7 +51,6 @@
   color: #222;
   font-weight: bold;
   max-width: 370px;
-  //text-align: center;
   font-size: 14px;
 
   &-info {
@@ -78,15 +68,10 @@
 
 //棋盘
 .board {
-  //display: flex;
-  //flex-direction: column;
-  //justify-content: space-around;
   max-width: 370px;
   background: whitesmoke;
-  //min-height: 360px;
   padding: 10px;
   margin: 10px auto;
-  //border: 2px dashed #409eff;
 
   &-row {
     display: flex;
@@ -102,12 +87,6 @@
     margin: 1px;
     background: gainsboro;
     overflow: hidden;
-
-    //max-width: 38px;
-    //max-height: 38px;
-    //border: 1px solid black;
-    //margin-right: -1px;
-    //margin-bottom: -1px;
 
     &--small {
       width: 38px;
@@ -136,7 +115,6 @@
 
       &--unknown {
         cursor: pointer;
-        //padding: 4px;
       }
 
       &--show {
@@ -149,7 +127,6 @@
 
     &__img {
       width: 85%;
-      //height: 85%;
 
       &--disable {
         cursor: auto;

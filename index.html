@@ -152,11 +152,11 @@
             el: "#mineSweeper",
             data() {
                 return {
-                    showOverlay: false,// 遮罩层
-                    hasChoseLevel: false,
-                    boomImg: 'static/images/icon_boom1.svg',
-                    flagImg: 'static/images/flag.svg',
-                    //难度
+                    showOverlay: false,// 遮罩层开关
+                    hasChoseLevel: false, // 难度选择页面开关
+                    boomImg: 'static/images/icon_boom1.svg', // 默认地雷图标地址
+                    flagImg: 'static/images/flag.svg', // 默认旗帜图标地址
+                    //难度配置
                     config: [{
                         alias: 'easy',
                         level: '青铜',
@@ -176,16 +176,7 @@
                         yNum: 30,
                         boomNum: 99,
                     }],
-                    gameInfo: {
-                        alias: 'easy',
-                        level: '青铜', // 难度等级
-                        time: 0, // 时间
-                        record: undefined,// 最高纪录
-                        xNum: 9, // 列数
-                        yNum: 9, // 行数
-                        boomNum: 10, // 炸弹数
-                    },
-                    // 难度评级
+                    // 难度评级配置
                     scoreLevel: {
                         easy: {
                             0.49: '100',
@@ -224,6 +215,16 @@
                             8000: '10'
                         }
                     },
+                    // 当前游戏信息
+                    gameInfo: {
+                        alias: 'easy',
+                        level: '青铜', // 难度等级
+                        time: 0, // 时间
+                        record: undefined,// 最高纪录
+                        xNum: 9, // 列数
+                        yNum: 9, // 行数
+                        boomNum: 10, // 炸弹数
+                    },
                     flagNum: 0, // 旗帜数
                     isInit: false, // 保证第一个点击的格子不是雷
                     board: [], // 棋盘
@@ -245,12 +246,14 @@
                     })
                     return num
                 },
+                // 当前难度的非雷格子数
                 saveNum() {
                     const {gameInfo: {xNum, yNum, boomNum}} = this;
                     return yNum * xNum - boomNum
                 },
             },
             watch: {
+                // 监听翻开的格子数，判断游戏是否结束
                 showCount() {
                     const {gameInfo: {time, alias, record}, over, showCount, saveNum, scoreLevel} = this;
                     if (over) return; // 处理最后一个点击到炸弹的异常情况
@@ -295,12 +298,12 @@
                 }
             },
             created() {
+                // 判断本地缓存中是否已上传自定义图标
                 ['boom', 'flag'].forEach((item) => {
                     if (localStorage.getItem(`${item}_img`)) {
                         this[`${item}Img`] = localStorage.getItem(`${item}_img`);
                     }
                 })
-
             },
             methods: {
                 // 重新开始确认
