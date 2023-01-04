@@ -451,6 +451,7 @@
                 })
                 return num
             })
+
             // 难度评级配置
             const scoreLevel = {
                 easy: {
@@ -490,6 +491,48 @@
                     8000: '10'
                 }
             }
+
+            // 监听翻开的格子数，判断游戏是否结束
+            watch(showCount, () => {
+                const {time, alias, record} = gameInfo.value
+                if (isOver.value) return; // 处理最后一个点击到炸弹的异常情况
+                if (showCount.value === saveNum) {
+                    // 停止计时
+                    clearInterval(timer)
+
+                    // 击败玩家百分比
+                    let percent = '1';
+
+                    for (const key in scoreLevel[alias]) {
+                        if (parseFloat(time) < key) {
+                            percent = scoreLevel[alias][key]
+                            break
+                        }
+                    }
+
+                    // 判断是否为最高纪录
+                    if (!record || parseFloat(time) < parseFloat(record)) {
+                        localStorage.setItem(`${alias}_record`, time)
+                        gameInfo.value.record = time;
+                    }
+
+                    // 弹出对话框
+                    vant.showDialog({
+                        message: `恭喜用时${time}秒挑战成功！\n击败了${percent}%的玩家！\n您的最高纪录：${gameInfo.value.record}秒`,
+                        confirmButtonColor: '#409eff',
+                        confirmButtonText: '重新开始',
+                        showCancelButton: true,
+                        cancelButtonText: '返回主页'
+                    }).then(() => {
+                        // 重新开始
+                        restart();
+                    }).catch(() => {
+                        // 返回主页
+                        setLevelPage();
+                    });
+                }
+            })
+
 
             // 游戏结束 END
 
@@ -540,49 +583,7 @@
 
 <!--            },-->
 <!--            watch: {-->
-<!--                // 监听翻开的格子数，判断游戏是否结束-->
-<!--                showCount() {-->
-<!--                    const {gameInfo: {time, alias, record}, over, showCount, saveNum, scoreLevel} = this;-->
-<!--                    if (over) return; // 处理最后一个点击到炸弹的异常情况-->
-<!--                    if (showCount === saveNum) {-->
-<!--                        // 停止计时-->
-<!--                        clearInterval(this.timer)-->
 
-<!--                        // 击败玩家百分比-->
-<!--                        let percent = '1';-->
-
-<!--                        for (const key in scoreLevel[alias]) {-->
-<!--                            console.log(key)-->
-
-<!--                            if (parseFloat(time) < key) {-->
-<!--                                percent = scoreLevel[alias][key]-->
-<!--                                console.log(key, '是这里', percent)-->
-<!--                                break-->
-<!--                            }-->
-<!--                        }-->
-
-<!--                        // 判断是否为最高纪录-->
-<!--                        if (!record || parseFloat(time) < parseFloat(record)) {-->
-<!--                            localStorage.setItem(`${alias}_record`, time)-->
-<!--                            this.gameInfo.record = time;-->
-<!--                        }-->
-
-<!--                        // 弹出对话框-->
-<!--                        vant.Dialog({-->
-<!--                            message: `恭喜用时${time}秒挑战成功！\n击败了${percent}%的玩家！\n您的最高纪录：${this.gameInfo.record}秒`,-->
-<!--                            confirmButtonColor: '#409eff',-->
-<!--                            confirmButtonText: '重新开始',-->
-<!--                            showCancelButton: true,-->
-<!--                            cancelButtonText: '返回主页'-->
-<!--                        }).then(() => {-->
-<!--                            // 重新开始-->
-<!--                            this.restart();-->
-<!--                        }).catch(() => {-->
-<!--                            // 返回主页-->
-<!--                            this.setLevelPage();-->
-<!--                        });-->
-<!--                    }-->
-<!--                }-->
 <!--            },-->
 <!--            methods: {-->
 
