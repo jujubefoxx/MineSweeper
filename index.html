@@ -85,57 +85,56 @@
             <div v-if="isOver" class="bottom-tips">踩到地雷，游戏结束</div>
         </div>
     </div>
-    <!--    <van-overlay :show="showOverlay" @click="showOverlay = false">-->
-    <!--        <div class="custom-wrapper" @click.stop>-->
-    <!--            <div class="custom-wrapper__upload">-->
-    <!--                <van-uploader class="custom-wrapper__upload-list"-->
-    <!--                              :before-read="beforeRead"-->
-    <!--                              :after-read="(file)=> afterRead(file,'boom')"-->
-    <!--                              @oversize="onOversize">-->
-    <!--                    <van-button icon="plus" type="default">更换地雷图标</van-button>-->
-    <!--                </van-uploader>-->
-    <!--                <van-uploader class="custom-wrapper__upload-list"-->
-    <!--                              :before-read="beforeRead"-->
-    <!--                              :after-read="(file)=> afterRead(file,'flag')"-->
-    <!--                              @oversize="onOversize">-->
-    <!--                    <van-button icon="plus" type="default">更换旗帜图标</van-button>-->
-    <!--                </van-uploader>-->
-    <!--                <van-button class="custom-wrapper__upload-list" icon="replay" type="default" @click="resetImg">还原默认图标-->
-    <!--                </van-button>-->
-    <!--            </div>-->
+    <van-overlay :show="showOverlay" @click="showOverlay = false">
+        <div class="custom-wrapper" @click.stop>
+            <div class="custom-wrapper__upload">
+                <van-uploader class="custom-wrapper__upload-list"
+                              :before-read="beforeRead"
+                              :after-read="(file)=> afterRead(file,'boom')">
+                    <van-button icon="plus" type="default">更换地雷图标</van-button>
+                </van-uploader>
+                <van-uploader class="custom-wrapper__upload-list"
+                              :before-read="beforeRead"
+                              :after-read="(file)=> afterRead(file,'flag')"
+                >
+                    <van-button icon="plus" type="default">更换旗帜图标</van-button>
+                </van-uploader>
+                <van-button class="custom-wrapper__upload-list" icon="replay" type="default" @click="resetImg">还原默认图标
+                </van-button>
+            </div>
 
-    <!--            <div class="custom-wrapper__preview">-->
-    <!--                <div class="custom-wrapper__preview-title">预览效果</div>-->
-    <!--                <div class="custom-wrapper__preview-board">-->
-    <!--                    <div class="board-row">-->
-    <!--                        <div :class="['board-column','board-column&#45;&#45;small']">-->
-    <!--                            <div :class="['board-column__list','board-column__list&#45;&#45;unknown']">-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                        <div :class="['board-column','board-column&#45;&#45;small']">-->
-    <!--                            <div :class="['board-column__list','board-column__list&#45;&#45;show']">-->
-    <!--                                <img class="board-column__img"-->
-    <!--                                     :src="boomImg"-->
-    <!--                                     alt="炸弹">-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                        <div :class="['board-column','board-column&#45;&#45;small']">-->
-    <!--                            <div :class="['board-column__list','board-column__list&#45;&#45;unknown']">-->
-    <!--                                <img class="board-column__img"-->
-    <!--                                     :src="flagImg"-->
-    <!--                                     alt="旗帜">-->
-    <!--                            </div>-->
-    <!--                        </div>-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="custom-wrapper__tips">-->
-    <!--                请上传图片(建议使用白色或透明底的正方形图片)<br/>-->
-    <!--                注意:清除缓存会还原设置的图片-->
-    <!--            </div>-->
+            <div class="custom-wrapper__preview">
+                <div class="custom-wrapper__preview-title">预览效果</div>
+                <div class="custom-wrapper__preview-board">
+                    <div class="board-row">
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--unknown']">
+                            </div>
+                        </div>
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--show']">
+                                <img class="board-column__img"
+                                     :src="boomImg"
+                                     alt="炸弹">
+                            </div>
+                        </div>
+                        <div :class="['board-column','board-column--small']">
+                            <div :class="['board-column__list','board-column__list--unknown']">
+                                <img class="board-column__img"
+                                     :src="flagImg"
+                                     alt="旗帜">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="custom-wrapper__tips">
+                请上传图片(建议使用白色或透明底的正方形图片)<br/>
+                注意:清除缓存会还原设置的图片
+            </div>
 
-    <!--        </div>-->
-    <!--    </van-overlay>-->
+        </div>
+    </van-overlay>
 </div>
 <!--&lt;!&ndash;引入cdn&ndash;&gt;-->
 <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
@@ -143,7 +142,7 @@
 
 <script>
     // 在 #app 标签下渲染一个按钮组件
-    const {createApp, reactive, ref, watch, computed, toRef} = Vue;
+    const {createApp, ref, watch, computed, reactive} = Vue;
     const app = createApp({
         setup() {
             // 选择难度 START
@@ -222,15 +221,20 @@
             // 计时器
             let timer = null
             // 默认地雷图标地址
-            let boomImg = 'static/images/icon_boom1.svg'
+            let boomImg = ref('static/images/icon_boom1.svg')
             // 默认旗帜图标地址
-            let flagImg = 'static/images/flag.svg'
+            let flagImg = ref('static/images/flag.svg')
+            // 图标地址集合
+            let imgArr = reactive({
+                boomImg,
+                flagImg
+            })
 
             // 判断本地缓存中是否已上传自定义图标
             function getImg() {
                 ['boom', 'flag'].forEach((item) => {
                     if (localStorage.getItem(`${item}_img`)) {
-                        this[`${item}Img`] = localStorage.getItem(`${item}_img`);
+                        imgArr[`${item}Img`] = localStorage.getItem(`${item}_img`);
                     }
                 })
             }
@@ -532,13 +536,67 @@
                     });
                 }
             })
-
-
             // 游戏结束 END
 
             // 自定义图片 START
-            // 自定义图片 END
+            // 遮罩层开关
+            let showOverlay = ref(false)
 
+            // 还原默认图标
+            function resetImg() {
+                boomImg.value = 'static/images/icon_boom1.svg'
+                // 默认旗帜图标地址
+                flagImg.value = 'static/images/flag.svg'
+                localStorage.removeItem('boom_img');
+                localStorage.removeItem('flag_img');
+                vant.showToast('还原成功');
+            }
+
+            // 返回布尔值
+            function beforeRead(file) {
+                if (file.type.indexOf('image') === -1) {
+                    vant.showToast('请上传正确的图片');
+                    return false;
+                }
+                return true;
+            }
+
+            // 上传回调
+            function afterRead(files, string) {
+                const {file} = files;
+                console.log(files, file)
+                // 保存图片到本地缓存
+                let canvas = document.createElement('canvas') // 创建Canvas对象(画布)
+                let context = canvas.getContext('2d')
+                let img = new Image()
+                img.src = files.content
+                img.onload = () => {
+
+                    canvas.width = 100
+
+                    canvas.height = 100
+
+                    context.drawImage(img, 0, 0, canvas.width, canvas.height)
+                    if (file.size > 2 * 1024) {
+                        //如果图片大小大于2M
+                        vant.showLoadingToast({
+                            message: '正在压缩图片...',
+                            forbidClick: true,
+                        });
+                        files.content = canvas.toDataURL(file.type)
+                        localStorage.setItem(`${string}_img`, files.content)
+
+                        imgArr[`${string}Img`] = files.content;
+                        vant.showToast('上传成功');
+                    } else {
+                        localStorage.setItem(`${string}_img`, files.content)
+                        imgArr[`${string}Img`] = files.content;
+                        vant.showToast('上传成功');
+                    }
+                }
+            }
+
+            // 自定义图片 END
 
             return {
                 config,
@@ -555,7 +613,11 @@
                 setFlag,
                 setBoom,
                 updateBoard,
-                handleRestart
+                handleRestart,
+                showOverlay,
+                resetImg,
+                beforeRead,
+                afterRead
             }
         }
     });
@@ -570,82 +632,5 @@
 
     app.mount('#mineSweeper');
 </script>
-<!--<script>-->
-<!--    const el = new Vue({-->
-<!--            //挂载-->
-<!--            el: "#mineSweeper",-->
-<!--            data() {-->
-<!--                return {-->
-<!--                    showOverlay: false,// 遮罩层开关-->
-<!--                }-->
-<!--            },-->
-<!--            computed: {-->
-
-<!--            },-->
-<!--            watch: {-->
-
-<!--            },-->
-<!--            methods: {-->
-
-<!--                // 还原默认图标-->
-<!--                resetImg() {-->
-<!--                    this.boomImg = 'static/images/icon_boom1.svg';-->
-<!--                    this.flagImg = 'static/images/flag.svg';-->
-<!--                    localStorage.removeItem('boom_img');-->
-<!--                    localStorage.removeItem('flag_img');-->
-<!--                    vant.Toast('还原成功');-->
-<!--                },-->
-
-<!--                // 返回布尔值-->
-<!--                beforeRead(file) {-->
-<!--                    if (file.type.indexOf('image') === -1) {-->
-<!--                        vant.Toast('请上传正确的图片');-->
-<!--                        return false;-->
-<!--                    }-->
-<!--                    return true;-->
-<!--                },-->
-<!--                // 上传回调-->
-<!--                afterRead(files, string) {-->
-<!--                    const {file} = files;-->
-<!--                    console.log(files, file)-->
-<!--                    // 保存图片到本地缓存-->
-<!--                    let canvas = document.createElement('canvas') // 创建Canvas对象(画布)-->
-<!--                    let context = canvas.getContext('2d')-->
-<!--                    let img = new Image()-->
-<!--                    img.src = files.content-->
-<!--                    img.onload = () => {-->
-
-<!--                        canvas.width = 100-->
-
-<!--                        canvas.height = 100-->
-
-<!--                        context.drawImage(img, 0, 0, canvas.width, canvas.height)-->
-
-<!--                        if (file.size > 2 * 1024) {-->
-<!--                            //如果图片大小大于2M-->
-<!--                            vant.Toast.loading({-->
-<!--                                message: '正在压缩图片...',-->
-<!--                                forbidClick: true,-->
-<!--                            });-->
-<!--                            files.content = canvas.toDataURL(file.type)-->
-<!--                            localStorage.setItem(`${string}_img`, files.content)-->
-<!--                            this[`${string}Img`] = files.content;-->
-<!--                            vant.Toast('上传成功');-->
-<!--                        } else {-->
-<!--                            localStorage.setItem(`${string}_img`, files.content)-->
-<!--                            this[`${string}Img`] = files.content;-->
-<!--                            vant.Toast('上传成功');-->
-<!--                        }-->
-
-<!--                    }-->
-
-<!--                },-->
-<!--                onOversize(file) {-->
-<!--                    console.log(file);-->
-<!--                },-->
-
-<!--        })-->
-<!--    ;-->
-<!--</script>-->
 </body>
 </html>
